@@ -1,0 +1,473 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id            String   @id @default(uuid())
+  walletAddress String   @unique
+  role          String   @default("both") // 'provider' | 'consumer' | 'both'
+  email         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  products           DataProduct[]
+  orders             Order[]
+  apiKeys            ApiKey[]
+  nfts               AccessNFT[]
+  providerRatings    ProviderRating[] @relation("ProviderRatings")
+  buyerRatings       ProviderRating[] @relation("BuyerRatings")
+  providerReputation ProviderReputation?
+
+  // 需求市场
+  dataRequests       DataRequest[]    @relation("BuyerRequests")
+  proposals          Proposal[]       @relation("ProviderProposals")
+
+  @@index([walletAddress])
+}
+
+model ApiKey {
+  id          String    @id @default(uuid())
+  userId      String
+  name        String
+  keyHash     String    @unique
+  keyPrefix   String?   // First 10 characters for display (e.g., "sk_YWVjOTA")
+  permissions String[]  @default(["read", "purchase"])
+  lastUsedAt  DateTime?
+  createdAt   DateTime  @default(now())
+  expiresAt   DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([keyHash])
+}
+
+model DataProduct {
+  id                String   @id @default(uuid())
+  providerId        String
+  name              String
+  description       String   @db.Text
+  category          String
+  price             Float
+
+  // File information
+  fileUrl           String
+  irysTransactionId String   @unique
+  fileType          String
+  fileSize          Int
+  fileName          String
+
+  // Encryption information (Lit Protocol - Legacy)
+  isEncrypted              Boolean @default(false)
+  ciphertext               String? @db.Text
+  dataToEncryptHash        String?
+  accessControlConditions  Json?
+  encryptionVersion        String? // For future compatibility
+
+  // Lit Actions encryption (v2.0 - Legacy)
+  litActionCode            String? @db.Text // Lit Action code for access control
+  litActionParams          Json?            // Parameters for Lit Action
+  nftCollectionAddress     String?          // NFT collection for access control
+  encryptionMethod         String?          // 'standard', 'lit-actions', or 'hybrid'
+
+  // Hybrid encryption (v3.0 - Current)
+  // AES-256-GCM encryption with database-stored keys
+  // NOTE: Encrypted file is stored on Irys, only the encryption KEY is stored in database
+  encryptionKeyCiphertext  String?          // Encrypted encryption key (encrypted with master key)
+  encryptionKeyIv          String?          // IV for encryption key encryption
+  encryptionKeyAuthTag     String?          // Auth tag for encryption key encryption
+
+  // Stats
+  views             Int      @default(0)
+  purchases         Int      @default(0)
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  provider User    @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  orders   Order[]
+  nfts     AccessNFT[] // NFTs minted for this product
+  proposals Proposal[] // Proposals that delivered this dataset
+
+  @@index([providerId])
+  @@index([category])
+  @@index([createdAt])
+  @@index([isEncrypted])
+  @@index([nftCollectionAddress])
+}
+
+model Order {
+  id              String   @id @default(uuid())
+  productId       String
+  buyerId         String
+
+  // Payment
+  amount          Float
+  status          String   @default("pending") // 'pending' | 'completed' | 'failed' | 'refunded'
+  paymentTxHash   String?
+  paymentNetwork  String?
+
+  // Download tracking
+  downloadCount   Int      @default(0)
+  lastDownloadAt  DateTime?
+
+  // Refund settings
+  canRefund       Boolean  @default(true)
+  refundDeadline  DateTime? // 退款截止时间
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  product DataProduct @relation(fields: [productId], references: [id])
+  buyer   User        @relation(fields: [buyerId], references: [id])
+  dispute Dispute?
+  refund  Refund?
+  rating  ProviderRating?
+
+  @@index([buyerId])
+  @@index([productId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model AccessNFT {
+  id              String   @id @default(uuid())
+  productId       String
+  ownerId         String   // User who owns the NFT
+
+  // NFT information
+  nftAddress      String   @unique // Solana address of the NFT
+  collectionAddress String // Collection this NFT belongs to
+  mintTxHash      String?  // Transaction hash of minting
+
+  // Metadata
+  name            String
+  uri             String
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  product DataProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  owner   User        @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  @@index([ownerId])
+  @@index([productId])
+  @@index([collectionAddress])
+}
+
+// Dispute Model - 争议管理
+model Dispute {
+  id          String   @id @default(uuid())
+  orderId     String   @unique
+
+  // 争议信息
+  reason      String   // 'DATA_QUALITY' | 'DOWNLOAD_FAILED' | 'FRAUD' | 'OTHER'
+  description String   @db.Text
+  evidence    Json?    // 证据文件 URLs
+
+  // 状态
+  status      String   @default("pending") // 'pending' | 'reviewing' | 'approved' | 'rejected'
+
+  // 退款金额
+  requestedAmount Float
+  approvedAmount  Float?
+
+  // 审核信息
+  reviewerId  String?
+  reviewNote  String?  @db.Text
+  reviewedAt  DateTime?
+
+  // 链上数据
+  irysId      String?  @unique  // Irys transaction ID
+  solanaHash  String?  @unique  // Solana transaction hash
+  dataHash    String?           // SHA-256 hash of dispute data
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  order       Order    @relation(fields: [orderId], references: [id])
+  refund      Refund?
+
+  @@index([orderId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// Refund Model - 退款管理
+model Refund {
+  id          String   @id @default(uuid())
+  orderId     String   @unique
+  disputeId   String?  @unique
+
+  // 退款信息
+  amount      Float
+  reason      String   // 'DOWNLOAD_FAILED' | 'DUPLICATE_PAYMENT' | 'FRAUD' | 'DATA_QUALITY' | 'SERVICE_OUTAGE'
+  type        String   // 'AUTOMATIC' | 'MANUAL' | 'DISPUTE'
+
+  // 状态
+  status      String   @default("pending") // 'pending' | 'processing' | 'completed' | 'failed'
+
+  // Solana 交易
+  txHash      String?  @unique
+  txNetwork   String?  // 'solana-devnet' | 'solana'
+
+  // 执行信息
+  executedBy  String?  // 执行退款的管理员 ID
+  executedAt  DateTime?
+  failureReason String? @db.Text
+
+  // 链上数据
+  irysId      String?  @unique  // Irys transaction ID
+  solanaHashProof String?  @unique  // Solana hash proof transaction
+  dataHash    String?           // SHA-256 hash of refund data
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  order       Order    @relation(fields: [orderId], references: [id])
+  dispute     Dispute? @relation(fields: [disputeId], references: [id])
+
+  @@index([orderId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// ProviderRating Model - 提供商评分
+model ProviderRating {
+  id          String   @id @default(uuid())
+  providerId  String
+  buyerId     String
+  orderId     String   @unique
+
+  // 评分
+  rating      Int      // 1-5 stars
+  comment     String?  @db.Text
+
+  // 评分维度
+  dataQuality    Int?  // 1-5
+  accuracy       Int?  // 1-5
+  documentation  Int?  // 1-5
+  support        Int?  // 1-5
+
+  // 链上数据
+  irysId      String?  @unique  // Irys transaction ID
+  solanaHash  String?  @unique  // Solana transaction hash
+  dataHash    String?           // SHA-256 hash of rating data
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  provider    User     @relation("ProviderRatings", fields: [providerId], references: [id])
+  buyer       User     @relation("BuyerRatings", fields: [buyerId], references: [id])
+  order       Order    @relation(fields: [orderId], references: [id])
+
+  @@index([providerId])
+  @@index([buyerId])
+  @@index([orderId])
+  @@index([rating])
+}
+
+// ProviderReputation Model - 提供商信誉
+model ProviderReputation {
+  id              String   @id @default(uuid())
+  providerId      String   @unique
+
+  // 统计数据
+  totalSales      Int      @default(0)
+  totalRevenue    Float    @default(0)
+
+  // 评分
+  averageRating   Float    @default(0)
+  totalRatings    Int      @default(0)
+
+  // 争议和退款
+  totalDisputes   Int      @default(0)
+  approvedDisputes Int     @default(0)
+  disputeRate     Float    @default(0) // approvedDisputes / totalSales
+
+  totalRefunds    Int      @default(0)
+  refundAmount    Float    @default(0)
+  refundRate      Float    @default(0) // totalRefunds / totalSales
+
+  // 信誉分数（0-100）
+  reputationScore Float    @default(50)
+
+  // 徽章
+  badges          Json?    // ['verified', 'top-seller', 'trusted']
+
+  // SAS 认证
+  sasAttestationId String? @unique
+  sasVerifiedAt    DateTime?
+
+  // 链上数据
+  irysId      String?  @unique  // Irys transaction ID for reputation snapshot
+  solanaHash  String?  @unique  // Solana transaction hash
+  dataHash    String?           // SHA-256 hash of reputation data
+
+  updatedAt       DateTime @updatedAt
+
+  provider        User     @relation(fields: [providerId], references: [id])
+
+  @@index([providerId])
+  @@index([reputationScore])
+}
+
+// ============================================
+// 需求市场 (Data Request Marketplace)
+// ============================================
+
+model DataRequest {
+  id          String   @id @default(cuid())
+  buyerId     String
+
+  // 需求信息
+  title       String
+  description String   @db.Text
+  budget      Float    // USDC
+  deadline    DateTime
+
+  // 质量要求 (JSON)
+  requirements Json?    // { format: "CSV", minRecords: 1000, etc. }
+
+  // 状态
+  status      RequestStatus @default(pending)
+
+  // 智能合约托管
+  escrowAddress String?  // Solana Escrow 地址
+  escrowAmount  Float?   // 托管金额
+
+  // 链上数据
+  irysId        String?  @unique  // 需求详情存储在 Irys
+  solanaHash    String?  @unique  // Solana 哈希
+  dataHash      String?           // SHA-256 hash
+
+  // 关系
+  buyer       User       @relation("BuyerRequests", fields: [buyerId], references: [id])
+  proposals   Proposal[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([buyerId])
+  @@index([status])
+  @@index([deadline])
+}
+
+model Proposal {
+  id          String   @id @default(cuid())
+  requestId   String
+  providerId  String
+
+  // 提案内容
+  description String   @db.Text
+  price       Float    // USDC
+  deliveryTime Int     // 天数
+  sampleDataUrl String? // 样本数据 URL (Irys)
+
+  // 状态
+  status      ProposalStatus @default(pending)
+
+  // 交付信息
+  datasetId   String?  // 交付的数据集 ID
+  deliveryProof String? // 交付证明 (Irys)
+  deliveredAt DateTime?
+
+  // 验收信息
+  acceptedAt  DateTime?
+  rejectedAt  DateTime?
+  rejectionReason String? @db.Text
+
+  // 链上数据
+  irysId      String?  @unique  // Irys transaction ID
+  solanaHash  String?  @unique  // Solana transaction hash
+  dataHash    String?           // SHA-256 hash
+
+  // 关系
+  request     DataRequest @relation(fields: [requestId], references: [id])
+  provider    User @relation("ProviderProposals", fields: [providerId], references: [id])
+  dataset     DataProduct? @relation(fields: [datasetId], references: [id])
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([requestId])
+  @@index([providerId])
+  @@index([status])
+}
+
+// ============================================
+// Enums
+// ============================================
+
+enum RequestStatus {
+  pending      // 等待提案
+  matched      // 已匹配提供商
+  in_progress  // 进行中
+  completed    // 已完成
+  cancelled    // 已取消
+  disputed     // 有争议
+}
+
+enum ProposalStatus {
+  pending      // 等待买家审核
+  accepted     // 已接受
+  rejected     // 已拒绝
+  delivered    // 已交付
+  confirmed    // 已确认
+}
+
+// ============================================
+// Anchor Escrow (智能合约托管)
+// ============================================
+
+model Escrow {
+  id          String   @id @default(uuid())
+
+  // Escrow 信息
+  escrowPda   String   @unique  // Escrow PDA 地址
+  buyer       String              // 买家钱包地址
+  provider    String              // 提供商钱包地址
+  platform    String              // 平台钱包地址
+
+  // 金额和 ID
+  amount      Float               // USDC 金额
+  requestId   String              // 关联的 DataRequest ID
+  proposalId  String              // 关联的 Proposal ID
+
+  // 状态
+  status      EscrowStatus @default(funded)
+
+  // 交易签名
+  signature   String?             // 创建交易签名
+
+  // 时间戳
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([buyer])
+  @@index([provider])
+  @@index([requestId])
+  @@index([proposalId])
+  @@index([status])
+}
+
+enum EscrowStatus {
+  created      // 已创建
+  funded       // 已充值
+  delivered    // 已交付
+  disputed     // 争议中
+  completed    // 已完成
+  refunded     // 已退款
+  cancelled    // 已取消
+}
+

@@ -1,0 +1,15 @@
+# DataNexus Python SDK Requirements
+
+# HTTP client
+requests>=2.31.0
+
+# Solana SDK
+solana>=0.30.0
+solders>=0.18.0
+
+# Base58 encoding
+base58>=2.1.1
+
+# Optional: For better output formatting
+colorama>=0.4.6
+

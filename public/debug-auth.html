@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auth Debug Tool</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    h1 { color: #333; }
+    h2 { color: #666; font-size: 18px; margin-top: 0; }
+    pre {
+      background: #f8f8f8;
+      padding: 15px;
+      border-radius: 4px;
+      overflow-x: auto;
+      border: 1px solid #ddd;
+    }
+    button {
+      background: #0070f3;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-right: 10px;
+    }
+    button:hover {
+      background: #0051cc;
+    }
+    .success { color: #22c55e; }
+    .error { color: #ef4444; }
+    .warning { color: #f59e0b; }
+    .info { color: #3b82f6; }
+  </style>
+</head>
+<body>
+  <h1>🔍 Auth Debug Tool</h1>
+  
+  <div class="card">
+    <h2>1. Check LocalStorage Token</h2>
+    <button onclick="checkToken()">Check Token</button>
+    <button onclick="clearToken()">Clear Token</button>
+    <pre id="tokenInfo">Click "Check Token" to see token info</pre>
+  </div>
+
+  <div class="card">
+    <h2>2. Verify Token with API</h2>
+    <button onclick="verifyToken()">Verify Token</button>
+    <pre id="verifyInfo">Click "Verify Token" to test API</pre>
+  </div>
+
+  <div class="card">
+    <h2>3. Test Upload Endpoint</h2>
+    <button onclick="testUpload()">Test Upload Auth</button>
+    <pre id="uploadInfo">Click "Test Upload Auth" to check upload endpoint</pre>
+  </div>
+
+  <script>
+    function checkToken() {
+      const token = localStorage.getItem('auth_token');
+      const output = document.getElementById('tokenInfo');
+      
+      if (!token) {
+        output.innerHTML = '<span class="error">❌ No token found in localStorage</span>\n\n' +
+          '<span class="warning">⚠️ You need to login first!</span>\n' +
+          'Go to: <a href="/">http://localhost:3000</a> and connect your wallet';
+        return;
+      }
+
+      // Decode JWT (without verification)
+      try {
+        const parts = token.split('.');
+        if (parts.length !== 3) {
+          output.innerHTML = '<span class="error">❌ Invalid token format</span>';
+          return;
+        }
+
+        const payload = JSON.parse(atob(parts[1]));
+        const header = JSON.parse(atob(parts[0]));
+        
+        const now = Math.floor(Date.now() / 1000);
+        const isExpired = payload.exp && payload.exp < now;
+        
+        output.innerHTML = 
+          '<span class="success">✅ Token found!</span>\n\n' +
+          '<strong>Header:</strong>\n' + JSON.stringify(header, null, 2) + '\n\n' +
+          '<strong>Payload:</strong>\n' + JSON.stringify(payload, null, 2) + '\n\n' +
+          '<strong>Status:</strong> ' + 
+          (isExpired ? '<span class="error">❌ EXPIRED</span>' : '<span class="success">✅ Valid</span>') + '\n' +
+          '<strong>Expires:</strong> ' + new Date(payload.exp * 1000).toLocaleString();
+      } catch (e) {
+        output.innerHTML = '<span class="error">❌ Failed to decode token: ' + e.message + '</span>';
+      }
+    }
+
+    function clearToken() {
+      localStorage.removeItem('auth_token');
+      document.getElementById('tokenInfo').innerHTML = '<span class="success">✅ Token cleared!</span>';
+    }
+
+    async function verifyToken() {
+      const token = localStorage.getItem('auth_token');
+      const output = document.getElementById('verifyInfo');
+      
+      if (!token) {
+        output.innerHTML = '<span class="error">❌ No token found. Please login first.</span>';
+        return;
+      }
+
+      output.innerHTML = '<span class="info">⏳ Verifying token...</span>';
+
+      try {
+        const response = await fetch('/api/auth/me', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          output.innerHTML = 
+            '<span class="success">✅ Token is valid!</span>\n\n' +
+            '<strong>User Info:</strong>\n' + JSON.stringify(data, null, 2);
+        } else {
+          output.innerHTML = 
+            '<span class="error">❌ Token verification failed!</span>\n\n' +
+            '<strong>Status:</strong> ' + response.status + '\n' +
+            '<strong>Error:</strong> ' + JSON.stringify(data, null, 2) + '\n\n' +
+            '<span class="warning">⚠️ You need to login again!</span>';
+        }
+      } catch (e) {
+        output.innerHTML = '<span class="error">❌ Request failed: ' + e.message + '</span>';
+      }
+    }
+
+    async function testUpload() {
+      const token = localStorage.getItem('auth_token');
+      const output = document.getElementById('uploadInfo');
+      
+      if (!token) {
+        output.innerHTML = '<span class="error">❌ No token found. Please login first.</span>';
+        return;
+      }
+
+      output.innerHTML = '<span class="info">⏳ Testing upload endpoint...</span>';
+
+      try {
+        // Create a dummy file
+        const blob = new Blob(['test data'], { type: 'text/plain' });
+        const file = new File([blob], 'test.csv', { type: 'text/csv' });
+        
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const response = await fetch('/api/upload/encrypted', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          body: formData
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          output.innerHTML = 
+            '<span class="success">✅ Upload endpoint accepts your token!</span>\n\n' +
+            '<strong>Response:</strong>\n' + JSON.stringify(data, null, 2);
+        } else {
+          output.innerHTML = 
+            '<span class="error">❌ Upload endpoint rejected your token!</span>\n\n' +
+            '<strong>Status:</strong> ' + response.status + '\n' +
+            '<strong>Error:</strong> ' + JSON.stringify(data, null, 2) + '\n\n' +
+            '<span class="warning">⚠️ Possible issues:</span>\n' +
+            '1. Token is expired\n' +
+            '2. Token is invalid\n' +
+            '3. JWT_SECRET mismatch\n' +
+            '4. You need to login again';
+        }
+      } catch (e) {
+        output.innerHTML = '<span class="error">❌ Request failed: ' + e.message + '</span>';
+      }
+    }
+
+    // Auto-check token on load
+    window.addEventListener('load', checkToken);
+  </script>
+</body>
+</html>
+
