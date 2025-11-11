@@ -1,0 +1,80 @@
+# Vercel Ignore File
+# Files and directories that should NOT be uploaded to Vercel
+
+# Dependencies (Vercel will install them)
+node_modules/
+
+# Build outputs (Vercel will rebuild)
+.next/
+out/
+build/
+
+# Rust/Anchor build artifacts (not needed for Next.js deployment)
+target/
+.anchor/
+test-ledger/
+
+# Development files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test files
+coverage/
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+
+# Documentation (optional - remove if you want docs deployed)
+docs/
+examples/
+ROADMAP.md
+PRE_DEPLOYMENT_CHECKLIST.md
+VERCEL_DEPLOYMENT_GUIDE.md
+DEMO_AGENT_X402_INTEGRATION.md
+
+# Rust/Solana source (not needed for Next.js)
+programs/
+Cargo.toml
+Cargo.lock
+Anchor.toml
+
+# Scripts (not needed in production)
+scripts/
+*.sh
+
+# Git
+.git/
+.gitignore
+
+# Environment files (use Vercel dashboard for env vars)
+.env
+.env.local
+.env*.local
+
+# Private keys and wallets
+platform-wallet.json
+test-wallet.json
+*-keypair.json
+*.pem
+*.key
+*.wallet
+
+# Temporary files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# Prisma migrations (Vercel will run them)
+prisma/migrations/
+
