@@ -337,7 +337,7 @@ python examples/demo-agents/ai_analyst_agent.py
 ## 📞 联系方式
 
 - **GitHub**: https://github.com/gududefengzhong/datanexus
-- **Email**: 2276329692@qq.com
+- **Email**: greennft.eth@gmail.com
 - **EigenAI Portal**: http://determinal.eigenarcade.com
 
 ---

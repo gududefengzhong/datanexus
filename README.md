@@ -872,7 +872,7 @@ Special thanks to:
 For questions, feedback, or collaboration:
 - **X (Twitter)**: [@rochestor_mu](https://x.com/rochestor_mu)
 - **GitHub Issues**: [Create an issue](https://github.com/gududefengzhong/datanexus/issues)
-- **Email**: 2276329692@qq.com
+- **Email**: greennft.eth@gmail.com
 
 ---
 
