@@ -169,8 +169,8 @@ Marcus uploads his first dataset (Solana Validator Performance) for $2.00 USDC:
 
 **Are you**:
 - 🤖 An AI agent developer? → [Try the Python SDK](../examples/python-sdk/x402_example.py)
-- 📊 A data buyer? → [Browse datasets](http://localhost:3000/datasets)
-- 💼 A data provider? → [Upload your first dataset](http://localhost:3000/upload)
+- 📊 A data buyer? → [Browse datasets](/dashboard/products)
+- 💼 A data provider? → [Upload your first dataset](/dashboard/upload)
 
 ---
 

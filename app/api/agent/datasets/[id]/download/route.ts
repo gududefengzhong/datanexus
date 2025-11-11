@@ -385,7 +385,7 @@ async function handleDownload(
   const contentType = contentTypeMap[product.fileType.toLowerCase()] || 'application/octet-stream'
 
   // Return file
-  return new NextResponse(fileBuffer, {
+  return new NextResponse(fileBuffer as any, {
     headers: {
       'Content-Type': contentType,
       'Content-Disposition': `attachment; filename="${product.fileName}"`,

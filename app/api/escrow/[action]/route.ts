@@ -68,7 +68,7 @@ export async function POST(
     const platformKeypair = Keypair.fromSecretKey(
       Buffer.from(JSON.parse(platformSecretKey))
     )
-    const platformWallet = new NodeWallet(platformKeypair)
+    const platformWallet = new NodeWallet(platformKeypair) as any
 
     // 创建客户端
     const connection = new Connection(ANCHOR_CONFIG.DEVNET_RPC, 'confirmed')
@@ -151,9 +151,10 @@ export async function POST(
 // GET: 获取 Escrow 状态
 export async function GET(
   request: NextRequest,
-  { params }: { params: { action: string } }
+  { params }: { params: Promise<{ action: string }> }
 ) {
   try {
+    const { action } = await params
     const { searchParams } = new URL(request.url)
     const buyerPublicKey = searchParams.get('buyer')
     const requestId = searchParams.get('requestId')
@@ -186,7 +187,7 @@ export async function GET(
       const platformKeypair = Keypair.fromSecretKey(
         Buffer.from(JSON.parse(platformSecretKey))
       )
-      const platformWallet = new NodeWallet(platformKeypair)
+      const platformWallet = new NodeWallet(platformKeypair) as any
       const connection = new Connection(ANCHOR_CONFIG.DEVNET_RPC, 'confirmed')
       const client = new AnchorEscrowClient(connection, platformWallet)
 

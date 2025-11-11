@@ -17,7 +17,7 @@ import {
   createAssociatedTokenAccountInstruction,
   getAccount,
 } from '@solana/spl-token'
-import { Program, AnchorProvider, web3, BN, Idl } from '@project-serum/anchor'
+import { Program, AnchorProvider, web3, BN, Idl } from '@coral-xyz/anchor'
 import idl from './idl/datanexus_escrow.json'
 
 // 程序 ID (已部署到 Devnet)

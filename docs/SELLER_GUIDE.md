@@ -17,7 +17,7 @@ Welcome to DataNexus! This guide will help you monetize your data by selling dat
 - Build your reputation by delivering quality data
 
 ### 3. **Upload Your First Dataset**
-- Visit [Upload Dataset](http://localhost:3000/upload)
+- Visit [Upload Dataset](/dashboard/upload)
 - Fill in dataset details
 - Upload your data file
 - Set your price
@@ -118,7 +118,7 @@ When you click "Upload":
 
 ### **How It Works**
 
-1. **Browse requests** at [Data Requests](http://localhost:3000/requests)
+1. **Browse requests** at [Data Requests](/dashboard/requests)
 2. **Submit a proposal** with your offer
 3. **Buyer accepts** and creates Escrow
 4. **Deliver the data** within deadline
@@ -203,7 +203,7 @@ You receive:       $9.50 USDC
 
 ### **Tracking Earnings**
 
-Visit [My Sales](http://localhost:3000/sales) to see:
+Visit [My Sales](/dashboard/sales) to see:
 - Total revenue
 - Number of sales
 - Active escrows
@@ -371,9 +371,9 @@ A: For direct purchases, contact support. For custom requests, buyer can dispute
 
 ## 🆘 Support
 
-- **Documentation**: [docs.datanexus.io](http://localhost:3000/docs)
-- **Discord**: [Join seller community](#)
-- **Email**: sellers@datanexus.io
+- **Documentation**: [DataNexus Docs](/docs)
+- **Discord**: [Join seller community](https://discord.gg/x402)
+- **Email**: greennft.eth@gmail.com
 - **GitHub**: [Report issues](https://github.com/gududefengzhong/datanexus/issues)
 - **X (Twitter)**: [@rochestor_mu](https://x.com/rochestor_mu)
 
@@ -381,10 +381,10 @@ A: For direct purchases, contact support. For custom requests, buyer can dispute
 
 ## 🎓 Next Steps
 
-1. ✅ [Upload your first dataset](http://localhost:3000/upload)
-2. ✅ [Browse data requests](http://localhost:3000/requests)
+1. ✅ [Upload your first dataset](/dashboard/upload)
+2. ✅ [Browse data requests](/dashboard/requests)
 3. ✅ [Read user stories](./USER_STORIES.md)
-4. ✅ [Join Discord community](#)
+4. ✅ [Join Discord community](https://discord.gg/x402)
 
 ---
 

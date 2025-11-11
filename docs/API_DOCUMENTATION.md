@@ -8,7 +8,8 @@ Complete API reference for integrating DataNexus into your AI agents and applica
 
 ### Base URL
 ```
-Production: https://datanexus.io/api
+Production: https://datanexus-da1ff0wj3-rochestors-projects.vercel.app/api
+Staging: https://datanexus-staging.vercel.app/api
 Development: http://localhost:3000/api
 ```
 
@@ -21,7 +22,7 @@ Authorization: Bearer YOUR_API_KEY
 ```
 
 **Get your API key**:
-1. Visit [API Keys](http://localhost:3000/settings/api-keys)
+1. Visit [API Keys](/settings/api-keys)
 2. Click "Generate New Key"
 3. Copy and store securely (shown only once!)
 
@@ -51,7 +52,7 @@ GET /api/agent/datasets/search
 
 **Example Request**:
 ```bash
-curl -X GET "http://localhost:3000/api/agent/datasets/search?query=DeFi&category=defi&maxPrice=1.0" \
+curl -X GET "${BASE_URL}/api/agent/datasets/search?query=DeFi&category=defi&maxPrice=1.0" \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
@@ -101,7 +102,7 @@ GET /api/agent/datasets/{id}
 
 **Example Request**:
 ```bash
-curl -X GET "http://localhost:3000/api/agent/datasets/550e8400-e29b-41d4-a716-446655440000" \
+curl -X GET "${BASE_URL}/api/agent/datasets/550e8400-e29b-41d4-a716-446655440000" \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
@@ -152,7 +153,7 @@ GET /api/agent/datasets/{id}/download
 
 **Step 1**: Request without payment token
 ```bash
-curl -X GET "http://localhost:3000/api/agent/datasets/{id}/download" \
+curl -X GET "${BASE_URL}/api/agent/datasets/{id}/download" \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
@@ -176,7 +177,7 @@ signature = send_usdc_payment(
 
 **Step 3**: Retry with payment token
 ```bash
-curl -X GET "http://localhost:3000/api/agent/datasets/{id}/download" \
+curl -X GET "${BASE_URL}/api/agent/datasets/{id}/download" \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "x-payment-token: {SOLANA_TX_SIGNATURE}"
 ```
@@ -222,7 +223,7 @@ POST /api/agent/datasets/{id}/analyze
 
 **Example Request**:
 ```bash
-curl -X POST "http://localhost:3000/api/agent/datasets/{id}/analyze" \
+curl -X POST "${BASE_URL}/api/agent/datasets/{id}/analyze" \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -274,7 +275,7 @@ GET /api/agent/purchases
 
 **Example Request**:
 ```bash
-curl -X GET "http://localhost:3000/api/agent/purchases?limit=10&page=1" \
+curl -X GET "${BASE_URL}/api/agent/purchases?limit=10&page=1" \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
@@ -323,7 +324,7 @@ from x402_example import SimpleX402Client
 client = SimpleX402Client(
     api_key="YOUR_API_KEY",
     solana_private_key="YOUR_SOLANA_PRIVATE_KEY",
-    base_url="http://localhost:3000"
+    base_url="https://datanexus-da1ff0wj3-rochestors-projects.vercel.app"  # or use localhost:3000 for development
 )
 
 # Search datasets
@@ -451,10 +452,10 @@ See complete examples in:
 
 ## 🆘 Support
 
-- **Documentation**: [docs.datanexus.io](http://localhost:3000/docs)
+- **Documentation**: [DataNexus Docs](/docs)
 - **API Status**: [status.datanexus.io](#)
-- **Discord**: [Join community](#)
-- **Email**: api@datanexus.io
+- **Discord**: [Join community](https://discord.gg/x402)
+- **Email**: greennft.eth@gmail.com
 
 ---
 

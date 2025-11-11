@@ -105,10 +105,10 @@ export async function GET(request: NextRequest) {
     })
 
     // Calculate user statistics
-    const providers = users.filter((u) => u._count.products > 0)
-    const buyers = users.filter((u) => u._count.orders > 0)
+    const providers = users.filter((u: any) => u._count.products > 0)
+    const buyers = users.filter((u: any) => u._count.orders > 0)
     const activeUsers = users.filter(
-      (u) => u._count.products > 0 || u._count.orders > 0
+      (u: any) => u._count.products > 0 || u._count.orders > 0
     )
 
     // Calculate time-based statistics
@@ -116,59 +116,59 @@ export async function GET(request: NextRequest) {
     const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
     const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
 
-    const newUsersThisWeek = users.filter((u) => u.createdAt >= oneWeekAgo).length
-    const newUsersThisMonth = users.filter((u) => u.createdAt >= oneMonthAgo).length
+    const newUsersThisWeek = users.filter((u: any) => u.createdAt >= oneWeekAgo).length
+    const newUsersThisMonth = users.filter((u: any) => u.createdAt >= oneMonthAgo).length
 
     // Calculate revenue statistics
-    const totalRevenue = orders.reduce((sum, order) => sum + order.amount, 0)
+    const totalRevenue = orders.reduce((sum: number, order: any) => sum + order.amount, 0)
     const platformFee = totalRevenue * PLATFORM_FEE_RATE
     const providerRevenue = totalRevenue - platformFee
 
-    const thisWeekOrders = orders.filter((o) => o.createdAt >= oneWeekAgo)
-    const thisWeekRevenue = thisWeekOrders.reduce((sum, o) => sum + o.amount, 0)
+    const thisWeekOrders = orders.filter((o: any) => o.createdAt >= oneWeekAgo)
+    const thisWeekRevenue = thisWeekOrders.reduce((sum: number, o: any) => sum + o.amount, 0)
 
-    const thisMonthOrders = orders.filter((o) => o.createdAt >= oneMonthAgo)
-    const thisMonthRevenue = thisMonthOrders.reduce((sum, o) => sum + o.amount, 0)
+    const thisMonthOrders = orders.filter((o: any) => o.createdAt >= oneMonthAgo)
+    const thisMonthRevenue = thisMonthOrders.reduce((sum: number, o: any) => sum + o.amount, 0)
 
     // Calculate proposal revenue
-    const confirmedProposals = proposals.filter((p) => p.status === 'confirmed')
-    const proposalRevenue = confirmedProposals.reduce((sum, p) => sum + p.price, 0)
+    const confirmedProposals = proposals.filter((p: any) => p.status === 'confirmed')
+    const proposalRevenue = confirmedProposals.reduce((sum: number, p: any) => sum + p.price, 0)
     const proposalPlatformFee = proposalRevenue * PLATFORM_FEE_RATE
 
     // Dataset statistics
-    const categoryStats = datasets.reduce((acc, ds) => {
+    const categoryStats = datasets.reduce((acc: any, ds: any) => {
       acc[ds.category] = (acc[ds.category] || 0) + 1
       return acc
     }, {} as Record<string, number>)
 
     const avgPrice =
       datasets.length > 0
-        ? datasets.reduce((sum, ds) => sum + ds.price, 0) / datasets.length
+        ? datasets.reduce((sum: number, ds: any) => sum + ds.price, 0) / datasets.length
         : 0
 
     const avgRating =
       ratings.length > 0
-        ? ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length
+        ? ratings.reduce((sum: number, r: any) => sum + r.rating, 0) / ratings.length
         : 0
 
     // Request marketplace statistics
     const requestStats = {
       total: requests.length,
-      pending: requests.filter((r) => r.status === 'pending').length,
-      matched: requests.filter((r) => r.status === 'matched').length,
-      in_progress: requests.filter((r) => r.status === 'in_progress').length,
-      completed: requests.filter((r) => r.status === 'completed').length,
-      cancelled: requests.filter((r) => r.status === 'cancelled').length,
-      disputed: requests.filter((r) => r.status === 'disputed').length,
+      pending: requests.filter((r: any) => r.status === 'pending').length,
+      matched: requests.filter((r: any) => r.status === 'matched').length,
+      in_progress: requests.filter((r: any) => r.status === 'in_progress').length,
+      completed: requests.filter((r: any) => r.status === 'completed').length,
+      cancelled: requests.filter((r: any) => r.status === 'cancelled').length,
+      disputed: requests.filter((r: any) => r.status === 'disputed').length,
     }
 
     const proposalStats = {
       total: proposals.length,
-      pending: proposals.filter((p) => p.status === 'pending').length,
-      accepted: proposals.filter((p) => p.status === 'accepted').length,
-      delivered: proposals.filter((p) => p.status === 'delivered').length,
-      confirmed: proposals.filter((p) => p.status === 'confirmed').length,
-      rejected: proposals.filter((p) => p.status === 'rejected').length,
+      pending: proposals.filter((p: any) => p.status === 'pending').length,
+      accepted: proposals.filter((p: any) => p.status === 'accepted').length,
+      delivered: proposals.filter((p: any) => p.status === 'delivered').length,
+      confirmed: proposals.filter((p: any) => p.status === 'confirmed').length,
+      rejected: proposals.filter((p: any) => p.status === 'rejected').length,
     }
 
     // Sync status (check how many items are synced to chain)
@@ -208,8 +208,8 @@ export async function GET(request: NextRequest) {
         },
         datasets: {
           total: datasets.length,
-          totalViews: datasets.reduce((sum, ds) => sum + ds.views, 0),
-          totalPurchases: datasets.reduce((sum, ds) => sum + ds.purchases, 0),
+          totalViews: datasets.reduce((sum: number, ds: any) => sum + ds.views, 0),
+          totalPurchases: datasets.reduce((sum: number, ds: any) => sum + ds.purchases, 0),
           avgPrice,
           avgRating,
           byCategory: categoryStats,
@@ -224,17 +224,17 @@ export async function GET(request: NextRequest) {
         requestMarketplace: {
           requests: requestStats,
           proposals: proposalStats,
-          totalBudget: requests.reduce((sum, r) => sum + r.budget, 0),
-          totalProposalValue: proposals.reduce((sum, p) => sum + p.price, 0),
+          totalBudget: requests.reduce((sum: number, r: any) => sum + r.budget, 0),
+          totalProposalValue: proposals.reduce((sum: number, p: any) => sum + p.price, 0),
           confirmedRevenue: proposalRevenue,
         },
         trustAndSafety: {
           totalRatings: ratings.length,
           avgRating,
           totalDisputes: disputes.length,
-          activeDisputes: disputes.filter((d) => d.status === 'pending').length,
+          activeDisputes: disputes.filter((d: any) => d.status === 'pending').length,
           totalRefunds: refunds.length,
-          refundAmount: refunds.reduce((sum, r) => sum + r.amount, 0),
+          refundAmount: refunds.reduce((sum: number, r: any) => sum + r.amount, 0),
         },
         onchainSync: {
           syncRate: syncRate.toFixed(2) + '%',

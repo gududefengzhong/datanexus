@@ -25,7 +25,7 @@ if (typeof window !== 'undefined') {
   }
 }
 
-const SwaggerUI = dynamic(() => import('swagger-ui-react'), { ssr: false })
+const SwaggerUI = dynamic(() => import('swagger-ui-react'), { ssr: false }) as any
 
 export default function ApiReferencePage() {
   const [content, setContent] = useState('')

@@ -47,9 +47,9 @@ export async function POST(request: NextRequest) {
     // Create connection and client
     const connection = new Connection(ANCHOR_CONFIG.DEVNET_RPC, 'confirmed')
     const buyerPubkey = new PublicKey(buyerPublicKey)
-    
+
     // Create a temporary wallet for building transaction
-    const tempWallet = new NodeWallet({ publicKey: buyerPubkey })
+    const tempWallet = new NodeWallet({ publicKey: buyerPubkey }) as any
     const client = new AnchorEscrowClient(connection, tempWallet)
 
     // Get escrow info
@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
     // Build the confirm and release instruction
     const tx = new Transaction()
 
-    const confirmIx = await client.program.methods
+    const confirmIx = await (client as any).program.methods
       .confirmAndRelease()
       .accounts({
         buyer: buyerPubkey,

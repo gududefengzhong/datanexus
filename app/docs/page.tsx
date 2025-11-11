@@ -2,6 +2,12 @@ import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Documentation - DataNexus',
+  description: 'Complete guides for buyers, sellers, and developers',
+}
 
 export default function DocsPage() {
   return (

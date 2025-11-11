@@ -92,7 +92,7 @@ export class AnchorEscrowClient {
   async getEscrow(buyer: PublicKey, requestId: string): Promise<EscrowAccount | null> {
     try {
       const [escrowPda] = this.getEscrowPDA(buyer, requestId)
-      const escrowAccount = await this.program.account.escrow.fetch(escrowPda)
+      const escrowAccount = await (this.program.account as any).escrow.fetch(escrowPda)
       return escrowAccount as any
     } catch (error) {
       console.error('获取 Escrow 失败:', error)
@@ -126,7 +126,7 @@ export class AnchorEscrowClient {
       )
       
       const tx = new Transaction().add(createIx)
-      const signature = await this.wallet.sendTransaction(tx, this.connection)
+      const signature = await (this.wallet as any).sendTransaction(tx, this.connection)
       await this.connection.confirmTransaction(signature, 'confirmed')
     }
 

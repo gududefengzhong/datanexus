@@ -17,9 +17,11 @@ import { verifyToken } from '@/lib/auth'
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
+
     // Verify authentication
     const authHeader = request.headers.get('authorization')
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -36,7 +38,7 @@ export async function POST(
 
     // Get product
     const product = await prisma.dataProduct.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         provider: {
           select: {
@@ -64,7 +66,7 @@ export async function POST(
     // Check if user has purchased the product
     const purchase = await prisma.order.findFirst({
       where: {
-        productId: params.id,
+        productId: id,
         buyerId: userId,
         status: 'COMPLETED',
       },

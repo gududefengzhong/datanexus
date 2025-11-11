@@ -22,7 +22,7 @@ fi
 
 # Install dependencies
 echo "📦 Installing dependencies..."
-npm install
+npm install --legacy-peer-deps
 
 # Generate Prisma client
 echo "🔧 Generating Prisma client..."

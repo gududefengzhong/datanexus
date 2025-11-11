@@ -22,7 +22,7 @@ https://spl-token-faucet.com/
 ```
 
 ### 3. **Browse Datasets**
-- Visit the [Datasets page](http://localhost:3000/datasets)
+- Visit the [Datasets page](/dashboard/products)
 - Filter by category: DeFi, Social, Market, NFT, Gaming
 - Sort by price, downloads, or rating
 
@@ -253,7 +253,7 @@ If you're not satisfied with delivered data:
 
 ### **Web Dashboard**
 
-Visit [My Purchases](http://localhost:3000/orders) to see:
+Visit [My Purchases](/dashboard/purchases) to see:
 - All purchased datasets
 - Download history
 - Transaction signatures
@@ -296,9 +296,9 @@ A: No, datasets are licensed for personal/business use only. Reselling violates 
 
 ## 🆘 Support
 
-- **Documentation**: [docs.datanexus.io](http://localhost:3000/docs)
+- **Documentation**: [docs.datanexus.io](./docs)
 - **Discord**: [Join our community](#)
-- **Email**: support@datanexus.io
+- **Email**: greennft.eth@gmail.com
 - **GitHub**: [Report issues](https://github.com/gududefengzhong/datanexus/issues)
 - **X (Twitter)**: [@rochestor_mu](https://x.com/rochestor_mu)
 

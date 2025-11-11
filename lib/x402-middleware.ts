@@ -134,7 +134,7 @@ function createPaymentRequiredResponse(config: PaymentConfig): NextResponse {
 /**
  * Verify a payment token with the facilitator
  */
-async function verifyPaymentToken(
+export async function verifyPaymentToken(
   token: string,
   config: PaymentConfig
 ): Promise<PaymentVerificationResult> {

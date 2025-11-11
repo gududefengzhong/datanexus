@@ -10,7 +10,7 @@
 
 import { Connection, Keypair, PublicKey, Transaction, SystemProgram } from '@solana/web3.js'
 import { createHash } from 'crypto'
-import { getIrysUploader } from './irys'
+import { getIrysClient, uploadToIrys } from './irys'
 
 // Solana connection
 const SOLANA_RPC = process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://devnet.helius-rpc.com/?api-key=4e09833e-bb41-411e-9ede-234ddc1ebf76'
@@ -78,7 +78,7 @@ export interface OnchainReputation {
  */
 export async function uploadRatingToIrys(rating: OnchainRating): Promise<string> {
   try {
-    const irys = await getIrysUploader()
+    const irys = getIrysClient()
     
     // Prepare data
     const data = JSON.stringify(rating, null, 2)
@@ -112,7 +112,7 @@ export async function uploadRatingToIrys(rating: OnchainRating): Promise<string>
  */
 export async function uploadDisputeToIrys(dispute: OnchainDispute): Promise<string> {
   try {
-    const irys = await getIrysUploader()
+    const irys = getIrysClient()
     
     const data = JSON.stringify(dispute, null, 2)
     
@@ -140,7 +140,7 @@ export async function uploadDisputeToIrys(dispute: OnchainDispute): Promise<stri
  */
 export async function uploadRefundToIrys(refund: OnchainRefund): Promise<string> {
   try {
-    const irys = await getIrysUploader()
+    const irys = getIrysClient()
     
     const data = JSON.stringify(refund, null, 2)
     
@@ -317,7 +317,7 @@ export async function getProviderRatingsFromIrys(providerId: string): Promise<On
  */
 export async function uploadReputationToIrys(reputation: OnchainReputation): Promise<string> {
   try {
-    const irys = await getIrysUploader()
+    const irys = getIrysClient()
     
     const data = JSON.stringify(reputation, null, 2)
     

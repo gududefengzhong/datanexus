@@ -4,10 +4,29 @@
 > Powered by Irys × Solana × x402 × EigenAI
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Built for x402 Hackathon](https://img.shields.io/badge/Built%20for-x402%20Hackathon-blue)](https://x402.io)
+[![Solana x402 Hackathon](https://img.shields.io/badge/Solana%20x402-Hackathon%202025-blueviolet)](https://solana.com/x402/hackathon)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)](https://www.typescriptlang.org/)
 [![Solana](https://img.shields.io/badge/Solana-Devnet-purple)](https://solana.com/)
+
+---
+
+## 🏆 Solana x402 Hackathon Submission
+
+**Track**: Best x402 Agent Application
+**Submission Date**: November 11, 2025
+**Live Demo**: [https://datanexus-huhiyohb8-rochestors-projects.vercel.app](https://datanexus-huhiyohb8-rochestors-projects.vercel.app)
+**Demo Video**: [Coming Soon]
+
+### Why DataNexus?
+
+DataNexus is the **first production-ready data marketplace** enabling AI agents to autonomously purchase data using the **x402 protocol** on **Solana**. We solve the critical problem of autonomous agent commerce with:
+
+- ✅ **Full x402 Integration**: HTTP 402 status codes for payment-required resources
+- ✅ **Solana Payments**: 400ms finality, $0.00025 transaction costs
+- ✅ **Smart Contract Escrow**: Trustless custom data requests
+- ✅ **Verifiable AI**: EigenAI cryptographic proofs prevent fraud
+- ✅ **Production Ready**: Deployed on Vercel, tested on Solana Devnet
 
 ---
 
@@ -17,7 +36,9 @@
 
 ### 🎬 Live Demo
 
-**Try it now**: [http://localhost:3000](http://localhost:3000) (after setup)
+**Production URL**: [https://xdatanexus.vercel.app/](https://xdatanexus.vercel.app/)
+
+**Local Development**: [http://localhost:3000](http://localhost:3000) (after setup)
 
 **Demo Agent**: See our AI Analyst Agent autonomously search, purchase, and analyze crypto market data with real Solana USDC payments.
 

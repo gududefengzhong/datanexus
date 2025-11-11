@@ -27,8 +27,8 @@ export async function POST(request: NextRequest) {
     // Create connection and client
     const connection = new Connection(ANCHOR_CONFIG.DEVNET_RPC, 'confirmed')
     const platformPubkey = new PublicKey(platformPublicKey)
-    
-    const tempWallet = new NodeWallet(platformPubkey)
+
+    const tempWallet = new NodeWallet(platformPubkey) as any
     const client = new AnchorEscrowClient(connection, tempWallet)
 
     // Get escrow info from database
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
 
     // Build the resolve dispute instruction
     const tx = new Transaction()
-    const resolveIx = await client.program.methods
+    const resolveIx = await (client as any).program.methods
       .resolveDispute(refundToBuyer)
       .accounts({
         platform: platformPubkey,
