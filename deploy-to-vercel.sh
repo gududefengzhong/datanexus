@@ -82,7 +82,7 @@ pre_deployment_checks() {
     # Check if node_modules exists
     if [ ! -d node_modules ]; then
         print_warning "node_modules not found. Installing dependencies..."
-        npm install
+        npm install --legacy-peer-deps
         print_success "Dependencies installed"
     else
         print_success "node_modules found"

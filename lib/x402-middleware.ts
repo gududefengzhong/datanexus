@@ -139,33 +139,40 @@ export async function verifyPaymentToken(
   config: PaymentConfig
 ): Promise<PaymentVerificationResult> {
   try {
-    // Method 1: Try facilitator first (recommended)
+    // Method 1: Try PayAI facilitator first (recommended)
     if (config.facilitatorUrl) {
-      console.log('🔍 Attempting facilitator verification...')
+      console.log('🔍 Verifying payment with PayAI facilitator...')
+      console.log('   Token:', token.substring(0, 20) + '...')
+      console.log('   Network:', config.network)
+      console.log('   Recipient:', config.recipient)
+      console.log('   Amount:', config.price, 'USDC')
+
       const facilitatorResult = await verifyWithFacilitator(token, config)
 
-      // If facilitator succeeds, return result
       if (facilitatorResult.valid) {
-        console.log('✅ Facilitator verification successful')
+        console.log('✅ Payment verified by facilitator')
         return facilitatorResult
       }
 
-      // If facilitator fails, log and fallback to Solana
-      console.warn('⚠️  Facilitator verification failed, falling back to Solana verification')
-      console.warn('   Error:', facilitatorResult.error)
+      console.warn('⚠️  Facilitator verification failed:', facilitatorResult.error)
+      console.warn('   Falling back to Solana blockchain verification...')
     }
 
-    // Method 2: Direct Solana verification (fallback)
-    console.log('🔍 Attempting direct Solana verification...')
+    // Method 2: Fallback to direct Solana blockchain verification
+    // This verifies USDC token transfers directly on-chain
+    console.log('🔍 Verifying payment on Solana blockchain...')
     const solanaResult = await verifyOnSolana(token, config)
 
     if (solanaResult.valid) {
-      console.log('✅ Solana verification successful')
-    } else {
-      console.error('❌ Solana verification failed:', solanaResult.error)
+      console.log('✅ Payment verified on Solana blockchain')
+      return solanaResult
     }
 
-    return solanaResult
+    console.error('❌ Payment verification failed')
+    return {
+      valid: false,
+      error: solanaResult.error || 'Payment verification failed. Please ensure you sent the correct USDC amount to the correct address.',
+    }
   } catch (error) {
     console.error('❌ Payment verification error:', error)
     return {
@@ -224,7 +231,7 @@ async function verifyWithFacilitator(
 }
 
 /**
- * Verify payment directly on Solana blockchain
+ * Verify USDC token payment directly on Solana blockchain
  * This is a fallback method when facilitator is not available
  */
 async function verifyOnSolana(
@@ -232,6 +239,9 @@ async function verifyOnSolana(
   config: PaymentConfig
 ): Promise<PaymentVerificationResult> {
   try {
+    console.log('🔍 Verifying USDC payment on Solana blockchain...')
+    console.log('   Signature:', signature)
+
     // Connect to Solana
     const rpcUrl =
       config.network === 'solana-devnet'
@@ -246,6 +256,7 @@ async function verifyOnSolana(
     })
 
     if (!tx) {
+      console.error('❌ Transaction not found')
       return {
         valid: false,
         error: 'Transaction not found',
@@ -254,15 +265,12 @@ async function verifyOnSolana(
 
     // Verify transaction was successful
     if (tx.meta?.err) {
+      console.error('❌ Transaction failed:', tx.meta.err)
       return {
         valid: false,
         error: 'Transaction failed',
       }
     }
-
-    // For SPL token transfers, we need to check the token accounts
-    // The recipient wallet address might not be directly in the transaction
-    // Instead, we should verify the transaction succeeded and contains a token transfer
 
     // Check if this is a token transfer by looking at the program IDs
     const accountKeys = tx.transaction.message.getAccountKeys()
@@ -273,6 +281,7 @@ async function verifyOnSolana(
     )
 
     if (!hasTokenProgram) {
+      console.error('❌ Not a token transfer transaction')
       return {
         valid: false,
         error: 'Not a token transfer transaction',
@@ -281,29 +290,67 @@ async function verifyOnSolana(
 
     // Verify the transaction has post token balances (indicates successful token transfer)
     if (!tx.meta?.postTokenBalances || tx.meta.postTokenBalances.length === 0) {
+      console.error('❌ No token transfers found in transaction')
       return {
         valid: false,
         error: 'No token transfers found in transaction',
       }
     }
 
-    // TODO: Verify exact amount and recipient token account
-    // For now, we verify:
-    // 1. Transaction succeeded
-    // 2. It's a token transfer
-    // 3. It has token balance changes
+    // Verify USDC amount
+    // USDC has 6 decimals, so we need to convert
+    const expectedAmount = parseFloat(config.price) * 1_000_000 // Convert to smallest unit
+
+    // Get the token balance changes
+    const preBalances = tx.meta.preTokenBalances || []
+    const postBalances = tx.meta.postTokenBalances || []
+
+    console.log('   Pre-balances:', preBalances.length)
+    console.log('   Post-balances:', postBalances.length)
+
+    // Find the transfer amount by comparing balances
+    let transferAmount = 0
+    for (const postBalance of postBalances) {
+      const preBalance = preBalances.find(
+        (pre) => pre.accountIndex === postBalance.accountIndex
+      )
+      if (preBalance && postBalance.uiTokenAmount && preBalance.uiTokenAmount) {
+        const diff = postBalance.uiTokenAmount.uiAmount! - preBalance.uiTokenAmount.uiAmount!
+        if (diff > 0) {
+          // This account received tokens
+          transferAmount = diff
+          console.log('   Transfer amount:', transferAmount, 'USDC')
+          break
+        }
+      }
+    }
+
+    // Verify amount (allow small rounding differences)
+    const expectedUsdcAmount = parseFloat(config.price)
+    const amountDiff = Math.abs(transferAmount - expectedUsdcAmount)
+
+    if (amountDiff > 0.01) {
+      console.error('❌ Amount mismatch')
+      console.error('   Expected:', expectedUsdcAmount, 'USDC')
+      console.error('   Received:', transferAmount, 'USDC')
+      return {
+        valid: false,
+        error: `Amount mismatch: expected ${expectedUsdcAmount} USDC, got ${transferAmount} USDC`,
+      }
+    }
 
     console.log('✅ Solana verification passed:')
     console.log('   - Transaction succeeded')
     console.log('   - Token transfer detected')
-    console.log('   - Token balances changed')
+    console.log('   - Amount verified:', transferAmount, 'USDC')
 
     return {
       valid: true,
       transactionSignature: signature,
+      amount: transferAmount.toString(),
     }
   } catch (error) {
-    console.error('Solana verification error:', error)
+    console.error('❌ Solana verification error:', error)
     return {
       valid: false,
       error: error instanceof Error ? error.message : 'Blockchain verification failed',

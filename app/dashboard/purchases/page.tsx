@@ -106,9 +106,16 @@ export default function PurchasesPage() {
         throw new Error('Please log in first')
       }
 
+      // Debug: Log product encryption status
+      console.log('📋 Product encryption status:', {
+        isEncrypted: product.isEncrypted,
+        encryptionMethod: product.encryptionMethod,
+        fileUrl: product.fileUrl,
+      })
+
       if (product.isEncrypted && product.encryptionMethod === 'hybrid') {
         // For hybrid encryption, call the decrypt API
-        console.log('🔐 Downloading encrypted file via decrypt API...')
+        console.log('🔐 Product is encrypted (hybrid) - calling /api/decrypt...')
 
         const decryptResponse = await fetch('/api/decrypt', {
           method: 'POST',
@@ -121,13 +128,20 @@ export default function PurchasesPage() {
           }),
         })
 
+        console.log('📥 Decrypt API response status:', decryptResponse.status)
+
         if (!decryptResponse.ok) {
           const error = await decryptResponse.json()
+          console.error('❌ Decrypt API error:', error)
           throw new Error(error.error || 'Failed to decrypt file')
         }
 
         // Get the decrypted file as a blob
         const blob = await decryptResponse.blob()
+        console.log('📦 Received blob:', {
+          size: blob.size,
+          type: blob.type,
+        })
 
         // Create download link
         const url = window.URL.createObjectURL(blob)
@@ -139,10 +153,11 @@ export default function PurchasesPage() {
         window.URL.revokeObjectURL(url)
         document.body.removeChild(a)
 
+        console.log('✅ File decrypted and downloaded successfully')
         toast.success('File decrypted and downloaded successfully!')
       } else {
         // For non-encrypted files, download directly from Irys
-        console.log('Downloading non-encrypted file from Irys...')
+        console.log('ℹ️  Product is not encrypted - downloading directly from Irys...')
         const response = await fetch(product.fileUrl)
         if (!response.ok) {
           throw new Error('Failed to download file from Irys')
@@ -158,6 +173,7 @@ export default function PurchasesPage() {
         window.URL.revokeObjectURL(url)
         document.body.removeChild(a)
 
+        console.log('✅ Non-encrypted file downloaded successfully')
         toast.success('File downloaded successfully!')
       }
     } catch (error) {

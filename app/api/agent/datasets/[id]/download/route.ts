@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { verifyApiKey } from '@/lib/api-auth'
 import { decryptData } from '@/lib/encryption'
-import { requirePayment } from '@/lib/x402-middleware'
+import { requirePayment, createPaymentRequiredResponse } from '@/lib/x402-middleware'
 
 /**
  * @swagger
@@ -214,7 +214,15 @@ export async function GET(
       // User hasn't purchased - require x402 payment
       const dataset = await prisma.dataProduct.findUnique({
         where: { id: productId },
-        select: { price: true, name: true },
+        select: {
+          price: true,
+          name: true,
+          provider: {
+            select: {
+              walletAddress: true,
+            },
+          },
+        },
       })
 
       if (!dataset) {
@@ -230,11 +238,24 @@ export async function GET(
         )
       }
 
+      if (!dataset.provider?.walletAddress) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: {
+              code: 'INVALID_PROVIDER',
+              message: 'Provider wallet address not configured',
+            },
+          },
+          { status: 500 }
+        )
+      }
+
       // Configure x402 payment
       const paymentConfig = {
         price: dataset.price.toString(),
         network: process.env.X402_NETWORK || 'solana-devnet',
-        recipient: process.env.PAYMENT_WALLET_ADDRESS!,
+        recipient: dataset.provider.walletAddress, // ✅ Use provider's wallet address from database
         facilitatorUrl: process.env.FACILITATOR_URL || 'https://facilitator.payai.network',
         description: `Purchase dataset: ${dataset.name}`,
       }

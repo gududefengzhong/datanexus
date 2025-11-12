@@ -80,7 +80,8 @@ npm install @solana/web3.js @solana/spl-token
 # x402 配置
 FACILITATOR_URL=https://facilitator.payai.network
 X402_NETWORK=solana-devnet  # 或 solana (主网)
-PAYMENT_WALLET_ADDRESS=你的Solana钱包地址
+NEXT_PUBLIC_USDC_MINT=4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU  # Circle 官方 USDC (Devnet)
+# 注意：支付接收地址存储在数据库中（User.walletAddress），每个提供者有自己的钱包地址
 
 # Solana 配置
 SOLANA_RPC_URL=https://api.devnet.solana.com  # Devnet
@@ -241,7 +242,7 @@ export async function GET(
   const paymentConfig = {
     price: dataset.price.toString(),
     network: process.env.X402_NETWORK || 'solana-devnet',
-    recipient: process.env.PAYMENT_WALLET_ADDRESS!,
+    recipient: dataset.provider.walletAddress,  // ✅ 使用数据提供者的钱包地址
     facilitatorUrl: process.env.FACILITATOR_URL || 'https://facilitator.payai.network',
   }
 

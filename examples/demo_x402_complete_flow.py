@@ -91,7 +91,7 @@ def demo_complete_x402_flow():
     # Configuration
     API_KEY = os.getenv('DATANEXUS_API_KEY', 'sk_OTk0YjJkNGQtNTY3Yi00MjJkLWI1OGYt')
     SOLANA_PRIVATE_KEY = os.getenv('SOLANA_BUYER_PRIVATE_KEY') or os.getenv('SOLANA_PRIVATE_KEY')
-    BASE_URL = os.getenv('DATANEXUS_BASE_URL', 'http://localhost:3000')
+    BASE_URL = os.getenv('DATANEXUS_BASE_URL', 'https://xdatanexus.vercel.app')
     
     if not SOLANA_PRIVATE_KEY:
         print_error("SOLANA_BUYER_PRIVATE_KEY or SOLANA_PRIVATE_KEY not set in .env.local")

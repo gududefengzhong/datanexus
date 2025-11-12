@@ -15,7 +15,7 @@
 
 **Track**: Best x402 Agent Application
 **Submission Date**: November 11, 2025
-**Live Demo**: [https://datanexus-huhiyohb8-rochestors-projects.vercel.app](https://datanexus-huhiyohb8-rochestors-projects.vercel.app)
+**Live Demo**: [https://xdatanexus.vercel.app/](https://xdatanexus.vercel.app/)
 **Demo Video**: [Coming Soon]
 
 ### Why DataNexus?
@@ -158,8 +158,8 @@ cp .env.example .env.local
 # - DATABASE_URL (Prisma Accelerate - already configured)
 # - REDIS_URL (Upstash - already configured)
 # - IRYS_PRIVATE_KEY (your Solana private key for Irys uploads)
-# - PAYMENT_WALLET_ADDRESS (your Solana address to receive payments)
 # - MASTER_ENCRYPTION_KEY (generate with: node -e "console.log(require('crypto').randomBytes(32).toString('base64'))")
+# Note: Payment addresses are stored in User.walletAddress (each provider has their own)
 
 # 5. Generate Prisma Client
 npx prisma generate
@@ -302,8 +302,8 @@ While Google's [A2A x402 extension](https://github.com/google-agentic-commerce/a
 
 **3. Data-First Design** 📊
 - Optimized specifically for data marketplace use cases
-- One-time purchase, unlimited downloads
-- Built-in download tracking and analytics
+- **One-time purchase, unlimited downloads** - Buy once, download forever
+- Built-in download tracking and analytics (count + timestamp)
 
 **4. Production Ready** ✅
 - Real Solana USDC payments tested and working
@@ -337,9 +337,10 @@ Based on [community feedback](https://x.com/BoxMrChen/status/1984123266416644266
 - ✅ **DataNexus**: Complete Web3 data marketplace (storage + encryption + AI)
 
 ### Challenge 3: High-Frequency Performance ⏱️
-- ⚠️ **Both**: ~3-5s for first payment
-- ✅ **DataNexus**: One-time purchase, unlimited fast downloads (~500ms)
+- ⚠️ **Both**: ~3-5s for first payment (Solana confirmation time)
+- ✅ **DataNexus**: **Buy once, download forever** - Unlimited fast re-downloads (~500ms)
 - 💡 **Our Focus**: High-value data transactions, not high-frequency API calls
+- 📊 **Download Tracking**: Every download is tracked (count + timestamp) but no additional payment required
 
 ### Challenge 4: Incomplete Flow 🔁
 - ❌ **Standard x402**: No transaction records or retry mechanism
@@ -698,6 +699,7 @@ This agent will:
 **Buyer Account**:
 - Address: `3ZdzhkkXjfGVK7xntqG476gQ1mBk6nnufamNeh9mPHQW`
 - USDC Balance: 9.70 USDC
+- 
 - Spent: 0.30 USDC (3 datasets purchased)
 
 **Provider Account**:
@@ -717,10 +719,39 @@ This agent will:
 
 ## 📖 Documentation
 
-### Core Documentation
-- [Demo Agent Integration](./DEMO_AGENT_X402_INTEGRATION.md) - Complete x402 integration guide
-- [EigenAI Quickstart](./EIGENAI_QUICKSTART.md) - EigenAI integration guide
-- [Project Status](./PROJECT_STATUS.md) - Current development status
+### 🚀 Getting Started
+- [Quick Start Guide](./QUICK_START.md) - Get up and running in 5 minutes
+- [Buyer Guide](./docs/01-getting-started/BUYER_GUIDE.md) - How to purchase datasets
+- [Seller Guide](./docs/01-getting-started/SELLER_GUIDE.md) - How to list and monetize data
+- [Quick Reference](./docs/01-getting-started/QUICK_REFERENCE.md) - Common commands and workflows
+
+### 🏗️ Architecture
+- [System Architecture](./docs/02-architecture/ARCHITECTURE.md) - Overall system design
+- [Database Schema](./docs/02-architecture/DATABASE_SCHEMA_DOCUMENTATION.md) - Complete database documentation
+- [Payment Flow](./docs/02-architecture/PAYMENT_FLOW_EXPLAINED.md) - How payments work
+- [Purchase Model](./docs/02-architecture/PURCHASE_MODEL_EXPLAINED.md) - Buy once, download forever
+
+### 🔧 Implementation Guides
+- [x402 Implementation](./docs/03-implementation/X402_IMPLEMENTATION_GUIDE.md) - Complete x402 integration
+- [x402 Purchase Flow](./docs/03-implementation/X402_PURCHASE_FLOW.md) - Step-by-step purchase flow
+- [EigenAI Integration](./docs/03-implementation/EIGENAI_INTEGRATION_GUIDE.md) - Verifiable AI inference
+- [Hybrid Encryption](./docs/03-implementation/HYBRID_ENCRYPTION_GUIDE.md) - AES-256 + RSA encryption
+- [USDC Payment Setup](./docs/03-implementation/USDC_PAYMENT_SETUP.md) - Solana USDC configuration
+
+### 📡 API Documentation
+- [API Reference](./docs/04-api/API_DOCUMENTATION.md) - Complete REST API documentation
+- [User Stories](./docs/04-api/USER_STORIES.md) - Use cases and examples
+
+### 🚢 Deployment
+- [Vercel Deployment](./docs/05-deployment/VERCEL_DEPLOYMENT_GUIDE.md) - Deploy to Vercel
+- [Environment Security](./docs/05-deployment/VERCEL_ENV_SECURITY_GUIDE.md) - Secure environment variables
+- [Direct Deployment](./docs/05-deployment/DIRECT_VERCEL_DEPLOYMENT.md) - Quick deployment guide
+
+### 📊 Project Management
+- [Project Status](./docs/06-project-management/PROJECT_STATUS.md) - Current development status
+- [Roadmap](./docs/06-project-management/ROADMAP.md) - Future plans
+- [PRD](./docs/06-project-management/PRD.md) - Product requirements
+- [Requirements](./docs/06-project-management/REQUIREMENTS.md) - Technical requirements
 
 ### API Documentation
 
@@ -793,8 +824,8 @@ REDIS_URL="redis://default:YOUR_PASSWORD@YOUR_HOST:6379"
 
 # Solana
 IRYS_PRIVATE_KEY="your_solana_private_key"
-PAYMENT_WALLET_ADDRESS="your_solana_address"
 SOLANA_RPC_URL="https://api.devnet.solana.com"
+# Note: Payment addresses are stored in database (User.walletAddress)
 
 # Encryption
 MASTER_ENCRYPTION_KEY="base64_encoded_32_byte_key"
@@ -804,7 +835,9 @@ EIGENAI_API_URL="https://api.eigenai.network"
 EIGENAI_ETH_PRIVATE_KEY="your_eth_private_key"
 
 # x402
-X402_FACILITATOR_URL="https://facilitator.x402.io"
+X402_NETWORK="solana-devnet"
+FACILITATOR_URL="https://facilitator.payai.network"
+NEXT_PUBLIC_USDC_MINT="4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU"  # Circle official USDC on Devnet
 ```
 
 ### Deploy to Vercel
@@ -882,7 +915,7 @@ Special thanks to:
 **Project Lead & Developer**: **rochestor**
 - **X (Twitter)**: [@rochestor_mu](https://x.com/rochestor_mu)
 - **GitHub**: [@gududefengzhong](https://github.com/gududefengzhong)
-- **Email**: 2276329692@qq.com
+- **Email**: greennft.eth@gmail.com
 
 **Role**: Full-stack development, blockchain integration, AI agent implementation, testing, and operations.
 

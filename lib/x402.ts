@@ -1,17 +1,23 @@
 /**
  * x402 Payment Integration
- * 
- * For MVP, we'll use a simplified payment flow:
+ *
+ * Payment flow using USDC SPL tokens:
  * 1. User clicks "Purchase"
  * 2. Connect wallet (already done)
- * 3. Sign payment message
- * 4. Submit payment to blockchain
- * 5. Confirm order in database
- * 
- * In production, this would use the full x402 protocol with facilitators.
+ * 3. Create USDC token transfer transaction
+ * 4. Sign and send transaction
+ * 5. Backend verifies payment via x402 protocol
+ * 6. Download granted upon verification
  */
 
-import { Connection, PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL } from '@solana/web3.js'
+import { Connection, PublicKey, Transaction } from '@solana/web3.js'
+import {
+  getAssociatedTokenAddress,
+  createAssociatedTokenAccountInstruction,
+  createTransferInstruction,
+  TOKEN_PROGRAM_ID,
+  ASSOCIATED_TOKEN_PROGRAM_ID,
+} from '@solana/spl-token'
 
 export interface PaymentRequest {
   productId: string
@@ -27,10 +33,13 @@ export interface PaymentResult {
 }
 
 /**
- * Initiate a payment for a product
- * 
- * For MVP on Devnet, we'll use SOL instead of USDC for simplicity
- * In production, this would use USDC SPL token transfers
+ * Initiate a USDC token payment for a product
+ *
+ * This function:
+ * 1. Gets the USDC mint address (Devnet or Mainnet)
+ * 2. Finds or creates Associated Token Accounts (ATAs) for sender and recipient
+ * 3. Creates a USDC transfer transaction
+ * 4. Signs and sends the transaction
  */
 export async function initiatePayment(
   request: PaymentRequest,
@@ -38,18 +47,58 @@ export async function initiatePayment(
   signTransaction: (tx: Transaction) => Promise<Transaction>
 ): Promise<PaymentResult> {
   try {
-    // Connect to Solana Devnet
+    console.log('💰 Initiating USDC payment...')
+    console.log('   Amount:', request.amount, 'USDC')
+    console.log('   Recipient:', request.recipientAddress)
+
+    // Connect to Solana
     const connection = new Connection(
       process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.devnet.solana.com',
       'confirmed'
     )
 
-    // For MVP: Convert USDC amount to SOL (1 USDC = 0.001 SOL on devnet for testing)
-    const solAmount = request.amount * 0.001
-    const lamports = Math.floor(solAmount * LAMPORTS_PER_SOL)
+    // USDC Mint Address
+    // Devnet: Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr
+    // Mainnet: EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v
+    const usdcMintAddress = new PublicKey(
+      process.env.NEXT_PUBLIC_USDC_MINT || 'Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr'
+    )
 
     // Create recipient public key
     const recipientPubkey = new PublicKey(request.recipientAddress)
+
+    // Get Associated Token Addresses (ATAs)
+    const senderTokenAccount = await getAssociatedTokenAddress(
+      usdcMintAddress,
+      walletPublicKey,
+      false,
+      TOKEN_PROGRAM_ID,
+      ASSOCIATED_TOKEN_PROGRAM_ID
+    )
+
+    const recipientTokenAccount = await getAssociatedTokenAddress(
+      usdcMintAddress,
+      recipientPubkey,
+      false,
+      TOKEN_PROGRAM_ID,
+      ASSOCIATED_TOKEN_PROGRAM_ID
+    )
+
+    console.log('   Sender Token Account:', senderTokenAccount.toBase58())
+    console.log('   Recipient Token Account:', recipientTokenAccount.toBase58())
+
+    // Check if sender has USDC token account
+    const senderAccountInfo = await connection.getAccountInfo(senderTokenAccount)
+
+    if (!senderAccountInfo) {
+      console.error('❌ Sender does not have a USDC token account')
+      return {
+        success: false,
+        error: 'You do not have a USDC token account. Please create one first or get some USDC from a faucet.',
+      }
+    }
+
+    console.log('   ✅ Sender has USDC token account')
 
     // Get recent blockhash
     const { blockhash } = await connection.getLatestBlockhash()
@@ -58,31 +107,74 @@ export async function initiatePayment(
     const transaction = new Transaction({
       feePayer: walletPublicKey,
       recentBlockhash: blockhash,
-    }).add(
-      SystemProgram.transfer({
-        fromPubkey: walletPublicKey,
-        toPubkey: recipientPubkey,
-        lamports,
-      })
+    })
+
+    // Check if recipient token account exists
+    const recipientAccountInfo = await connection.getAccountInfo(recipientTokenAccount)
+
+    if (!recipientAccountInfo) {
+      console.log('   ⚠️  Recipient does not have USDC token account')
+      console.log('   Creating recipient token account...')
+      // Create recipient's associated token account if it doesn't exist
+      transaction.add(
+        createAssociatedTokenAccountInstruction(
+          walletPublicKey, // payer
+          recipientTokenAccount, // associated token account
+          recipientPubkey, // owner
+          usdcMintAddress, // mint
+          TOKEN_PROGRAM_ID,
+          ASSOCIATED_TOKEN_PROGRAM_ID
+        )
+      )
+    } else {
+      console.log('   ✅ Recipient has USDC token account')
+    }
+
+    // USDC has 6 decimals, so multiply by 10^6
+    const usdcAmount = Math.floor(request.amount * 1_000_000)
+    console.log('   Transfer amount (raw):', usdcAmount)
+
+    // Add transfer instruction
+    transaction.add(
+      createTransferInstruction(
+        senderTokenAccount, // source
+        recipientTokenAccount, // destination
+        walletPublicKey, // owner
+        usdcAmount, // amount (in smallest unit)
+        [], // multi-signers (none)
+        TOKEN_PROGRAM_ID
+      )
     )
 
+    console.log('   Signing transaction...')
     // Sign transaction with wallet
     const signedTransaction = await signTransaction(transaction)
 
+    console.log('   Sending transaction...')
     // Send transaction
     const signature = await connection.sendRawTransaction(
-      signedTransaction.serialize()
+      signedTransaction.serialize(),
+      {
+        skipPreflight: false,
+        preflightCommitment: 'confirmed',
+      }
     )
+
+    console.log('   Transaction sent:', signature)
+    console.log('   Waiting for confirmation...')
 
     // Confirm transaction
     await connection.confirmTransaction(signature, 'confirmed')
+
+    console.log('✅ Payment successful!')
+    console.log('   Signature:', signature)
 
     return {
       success: true,
       txHash: signature,
     }
   } catch (error) {
-    console.error('Payment error:', error)
+    console.error('❌ Payment error:', error)
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Payment failed',

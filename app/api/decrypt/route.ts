@@ -202,20 +202,33 @@ export async function POST(request: NextRequest) {
 
     console.log('✅ File decrypted successfully');
     console.log('  - Decrypted buffer size:', decryptedBuffer.length, 'bytes');
+    console.log('  - First 50 chars of decrypted buffer:', decryptedBuffer.toString('utf8').substring(0, 50));
 
     // The decrypted buffer contains base64-encoded file data
     // We need to decode it back to the original binary data
     const decryptedBase64 = decryptedBuffer.toString('utf8');
+    console.log('  - Decrypted base64 length:', decryptedBase64.length);
+    console.log('  - First 50 chars of base64:', decryptedBase64.substring(0, 50));
+
     const originalFileBuffer = Buffer.from(decryptedBase64, 'base64');
 
     console.log('  - Original file size:', originalFileBuffer.length, 'bytes');
-    console.log('  - First 100 bytes:', originalFileBuffer.toString('utf8').substring(0, 100));
+    console.log('  - File type:', product.fileType);
+    console.log('  - File name:', product.fileName);
+    console.log('  - Will set Content-Type to:', product.fileType || 'application/octet-stream');
+
+    // Try to detect if it's a CSV file
+    if (product.fileType?.includes('csv') || product.fileName?.endsWith('.csv')) {
+      const preview = originalFileBuffer.toString('utf8').substring(0, 200);
+      console.log('  - CSV preview (first 200 chars):', preview);
+    }
 
     // Return the decrypted file as a download
     return new NextResponse(originalFileBuffer, {
       headers: {
         'Content-Type': product.fileType || 'application/octet-stream',
         'Content-Disposition': `attachment; filename="${product.fileName || 'download'}"`,
+        'Content-Length': originalFileBuffer.length.toString(),
       },
     });
   } catch (error: any) {

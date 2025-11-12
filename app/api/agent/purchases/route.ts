@@ -78,7 +78,8 @@ export async function GET(request: NextRequest) {
         productId: true,
         amount: true,
         status: true,
-        signature: true,
+        paymentTxHash: true,
+        paymentNetwork: true,
         downloadCount: true,
         lastDownloadAt: true,
         createdAt: true,
@@ -106,12 +107,13 @@ export async function GET(request: NextRequest) {
       product: order.product,
       amount: order.amount,
       status: order.status,
-      signature: order.signature,
+      paymentTxHash: order.paymentTxHash,
+      paymentNetwork: order.paymentNetwork,
       downloadCount: order.downloadCount,
       lastDownloadAt: order.lastDownloadAt,
       createdAt: order.createdAt,
-      explorerUrl: order.signature
-        ? `https://explorer.solana.com/tx/${order.signature}?cluster=devnet`
+      explorerUrl: order.paymentTxHash
+        ? `https://explorer.solana.com/tx/${order.paymentTxHash}?cluster=${order.paymentNetwork === 'solana-devnet' ? 'devnet' : 'mainnet-beta'}`
         : null,
     }))
 

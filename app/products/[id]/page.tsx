@@ -140,37 +140,57 @@ export default function ProductDetailPage() {
     setPurchaseSuccess(false)
 
     try {
-      // Step 1: Create pending order
       const token = localStorage.getItem('auth_token')
       if (!token) {
         throw new Error('Please log in first')
       }
 
-      const orderResponse = await fetch('/api/orders', {
-        method: 'POST',
+      console.log('🛒 Starting x402 purchase flow...')
+
+      // Step 1: Try to download (will receive HTTP 402 Payment Required)
+      console.log('📥 Step 1: Requesting download to get payment details...')
+      const downloadResponse = await fetch(`/api/products/${product.id}/download`, {
         headers: {
-          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          productId: product.id,
-        }),
       })
 
-      if (!orderResponse.ok) {
-        const error = await orderResponse.json()
-        throw new Error(error.error || 'Failed to create order')
+      // Check if we got HTTP 402 Payment Required
+      if (downloadResponse.status !== 402) {
+        if (downloadResponse.ok) {
+          throw new Error('You may have already purchased this dataset')
+        }
+        const error = await downloadResponse.json()
+        throw new Error(error.error?.message || 'Failed to initiate purchase')
       }
 
-      const order = await orderResponse.json()
+      console.log('💰 Step 2: Received HTTP 402 Payment Required')
 
-      // Step 2: Initiate payment
+      // Parse x402 payment headers
+      const paymentAmount = downloadResponse.headers.get('x-payment-amount')
+      const paymentCurrency = downloadResponse.headers.get('x-payment-currency')
+      const paymentRecipient = downloadResponse.headers.get('x-payment-recipient')
+      const paymentNetwork = downloadResponse.headers.get('x-payment-network')
+
+      console.log('📋 Payment details:', {
+        amount: paymentAmount,
+        currency: paymentCurrency,
+        recipient: paymentRecipient,
+        network: paymentNetwork,
+      })
+
+      if (!paymentAmount || !paymentRecipient) {
+        throw new Error('Invalid payment details from server')
+      }
+
+      // Step 3: Initiate Solana payment
+      console.log('💳 Step 3: Initiating Solana payment...')
       const paymentResult = await initiatePayment(
         {
           productId: product.id,
           productName: product.name,
-          amount: product.price,
-          recipientAddress: product.provider.walletAddress,
+          amount: parseFloat(paymentAmount),
+          recipientAddress: paymentRecipient,
         },
         publicKey,
         signTransaction
@@ -180,31 +200,47 @@ export default function ProductDetailPage() {
         throw new Error(paymentResult.error || 'Payment failed')
       }
 
-      // Step 3: Confirm order with payment details
-      const confirmResponse = await fetch(`/api/orders/${order.id}/confirm`, {
-        method: 'POST',
+      console.log('✅ Payment successful:', paymentResult.txHash)
+
+      // Step 4: Retry download with payment token (x-payment-token header)
+      console.log('📥 Step 4: Retrying download with payment token...')
+      const downloadWithPaymentResponse = await fetch(`/api/products/${product.id}/download`, {
         headers: {
-          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
+          'x-payment-token': paymentResult.txHash!,
         },
-        body: JSON.stringify({
-          paymentTxHash: paymentResult.txHash,
-          paymentNetwork: 'solana-devnet',
-        }),
       })
 
-      if (!confirmResponse.ok) {
-        throw new Error('Failed to confirm order')
+      if (!downloadWithPaymentResponse.ok) {
+        const error = await downloadWithPaymentResponse.json()
+        throw new Error(error.error?.message || 'Failed to complete purchase')
       }
+
+      console.log('✅ Purchase completed via x402 protocol!')
+
+      // Step 5: Trigger file download
+      console.log('📥 Step 5: Downloading file...')
+      const blob = await downloadWithPaymentResponse.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = product.fileName || `${product.name}.${product.fileType}`
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+      console.log('✅ File downloaded!')
 
       // Success!
       setPurchaseSuccess(true)
+      setHasPurchased(true)
 
       // Show success toast with transaction link
       const explorerUrl = getExplorerUrl(paymentResult.txHash!, 'devnet')
-      toast.success('Purchase successful!', {
+      toast.success('Purchase successful via x402!', {
         description: (
           <div className="space-y-2">
+            <p>✅ Payment verified on Solana blockchain</p>
             <p>You can now download the dataset.</p>
             <div className="flex flex-col gap-1 text-xs">
               <span className="font-mono text-muted-foreground">
@@ -227,7 +263,7 @@ export default function ProductDetailPage() {
       // Refresh product to update purchase count
       fetchProduct(product.id)
     } catch (error) {
-      console.error('Purchase failed:', error)
+      console.error('❌ Purchase failed:', error)
       setPurchaseError(error instanceof Error ? error.message : 'Purchase failed')
     } finally {
       setPurchasing(false)
@@ -247,20 +283,25 @@ export default function ProductDetailPage() {
       }
 
       // Debug: Log product encryption status
-      console.log('Product encryption status:', {
+      console.log('📋 Product encryption status:', {
         isEncrypted: product.isEncrypted,
         encryptionMethod: product.encryptionMethod,
+        encryptionVersion: product.encryptionVersion,
         fileUrl: product.fileUrl,
       })
 
-      // If encrypted, decrypt on client side
+      // If encrypted, decrypt on server side
       if (product.isEncrypted) {
+        console.log('🔐 Product is encrypted, checking encryption method...')
+
         // Check encryption method first
         if (product.encryptionMethod === 'hybrid') {
           // Hybrid encryption (v3.0) - use decrypt API
-          console.log('🔐 Using hybrid encryption (v3.0)...')
+          console.log('✅ Using hybrid encryption (v3.0) - calling /api/decrypt...')
 
           // Call decrypt API (returns decrypted file as blob)
+          console.log('📤 Sending request to /api/decrypt with productId:', product.id)
+
           const decryptResponse = await fetch('/api/decrypt', {
             method: 'POST',
             headers: {
@@ -272,13 +313,21 @@ export default function ProductDetailPage() {
             }),
           })
 
+          console.log('📥 Decrypt API response status:', decryptResponse.status)
+          console.log('📥 Response headers:', Object.fromEntries(decryptResponse.headers.entries()))
+
           if (!decryptResponse.ok) {
             const errorData = await decryptResponse.json()
+            console.error('❌ Decrypt API error:', errorData)
             throw new Error(errorData.error || 'Failed to decrypt file')
           }
 
           // Get the decrypted file as a blob
           const blob = await decryptResponse.blob()
+          console.log('📦 Received blob:', {
+            size: blob.size,
+            type: blob.type,
+          })
 
           // Create download link
           const url = window.URL.createObjectURL(blob)
@@ -290,17 +339,18 @@ export default function ProductDetailPage() {
           window.URL.revokeObjectURL(url)
           document.body.removeChild(a)
 
-          console.log('✅ File downloaded successfully')
+          console.log('✅ File decrypted and downloaded successfully')
           toast.success('File decrypted and downloaded successfully!')
           setDownloading(false)
           return // Exit early for hybrid encryption
+        } else {
+          // Unsupported encryption method
+          console.error('❌ Unsupported encryption method:', product.encryptionMethod)
+          throw new Error(`Unsupported encryption method: ${product.encryptionMethod}. Only hybrid encryption (v3.0) is supported.`)
         }
-
-        // Unsupported encryption method
-        throw new Error('Unsupported encryption method. Only hybrid encryption (v3.0) is supported.')
       } else {
+        console.log('ℹ️  Product is not encrypted, downloading directly from Irys...')
         // For non-encrypted files, download directly from Irys
-        console.log('Downloading non-encrypted file from Irys...')
         const response = await fetch(product.fileUrl)
         if (!response.ok) {
           throw new Error('Failed to download file from Irys')
@@ -316,6 +366,7 @@ export default function ProductDetailPage() {
         window.URL.revokeObjectURL(url)
         document.body.removeChild(a)
 
+        console.log('✅ Non-encrypted file downloaded successfully')
         toast.success('File downloaded successfully!')
       }
     } catch (error) {

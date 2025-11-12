@@ -182,7 +182,7 @@ build_and_test() {
     print_header "Building and Testing"
     
     print_info "Installing dependencies..."
-    npm install
+    npm install --legacy-peer-deps
     print_success "Dependencies installed"
     
     print_info "Generating Prisma client..."
