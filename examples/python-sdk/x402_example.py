@@ -53,7 +53,7 @@ class SimpleX402Client:
     def __init__(
         self,
         api_key: str,
-        base_url: str = "http://localhost:3000",
+        base_url: str = "https://xdatanexus.vercel.app",
         solana_private_key: Optional[str] = None,
         solana_rpc_url: str = "https://api.devnet.solana.com"
     ):
@@ -242,7 +242,7 @@ class SimpleX402Client:
         """Search for datasets"""
         params = {"limit": limit}
         if query:
-            params['query'] = query
+            params['q'] = query  # API uses 'q' not 'query'
         if category:
             params['category'] = category
         if max_price is not None:
@@ -474,7 +474,7 @@ def main():
     # Initialize client
     # Note: Replace with your actual API key
     client = SimpleX402Client(
-        api_key="sk_OTk0YjJkNGQtNTY3Yi00MjJkLWI1OGYt",
+        api_key="sk_Y2MwZTJjMjAtZDI3Mi00YmEwLWFkYzAt",
         # Uncomment and add your Solana private key to enable real payments:
         # solana_private_key="YOUR_SOLANA_PRIVATE_KEY_HERE"
     )
@@ -494,13 +494,14 @@ def main():
         dataset_id = datasets[0]['id']
         print(f"\n📋 Getting details for dataset: {dataset_id}")
         details = client.get_dataset_details(dataset_id)
-        
+
         if details['success']:
             ds = details['data']
             print(f"\nDataset: {ds['name']}")
             print(f"Price: ${ds['price']}")
-            print(f"Provider: {ds['provider']['walletAddress'][:8]}...")
-            print(f"Downloads: {ds['downloadCount']}")
+            print(f"Provider: {ds.get('provider', {}).get('walletAddress', 'N/A')[:8]}...")
+            print(f"Purchases: {ds.get('purchases', 0)}")
+            print(f"Views: {ds.get('views', 0)}")
     
     # Example 3: Try to download (will trigger 402 if not purchased)
     print("\n" + "=" * 60)
@@ -523,12 +524,15 @@ def main():
     # Example 4: Check purchase history
     print("\n📜 Checking purchase history...")
     purchases = client.get_purchases()
-    
+
     if purchases['success']:
         purchase_list = purchases['data']['purchases']
         print(f"\nYou have {len(purchase_list)} purchases:")
         for p in purchase_list[:5]:  # Show first 5
-            print(f"  - {p['dataset']['name']} (${p['amount']}) - {p['status']}")
+            product = p.get('product', {})
+            print(f"  - {product.get('name', 'Unknown')} (${p['amount']}) - {p['status']}")
+            if p.get('paymentTxHash'):
+                print(f"    TX: {p['paymentTxHash'][:20]}...")
     
     print("\n" + "=" * 60)
     print("  Demo Complete")

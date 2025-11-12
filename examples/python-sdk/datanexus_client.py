@@ -11,13 +11,13 @@ import json
 class DataNexusClient:
     """Client for interacting with the DataNexus API"""
 
-    def __init__(self, api_key: str, base_url: str = "http://localhost:3000"):
+    def __init__(self, api_key: str, base_url: str = "https://xdatanexus.vercel.app"):
         """
         Initialize the DataNexus client
 
         Args:
             api_key: Your API key from /dashboard/api-keys
-            base_url: Base URL of the DataNexus API (default: http://localhost:3000)
+            base_url: Base URL of the DataNexus API (default: production URL)
         """
         self.api_key = api_key
         self.base_url = base_url.rstrip("/")
@@ -157,24 +157,68 @@ class DataNexusClient:
 
         return self._request("POST", f"/api/agent/datasets/{dataset_id}/purchase", data=data)
 
-    def download_dataset(self, dataset_id: str, output_path: str) -> None:
+    def download_dataset(self, dataset_id: str, output_path: str = None, auto_pay: bool = True) -> Dict[str, Any]:
         """
-        Download a purchased dataset
+        Download a purchased dataset (supports x402 protocol)
 
         Args:
             dataset_id: Dataset ID
-            output_path: Path to save the downloaded file
+            output_path: Path to save the downloaded file (optional, only used if auto_pay=True)
+            auto_pay: If False, return HTTP 402 payment details instead of downloading
+
+        Returns:
+            If auto_pay=False and payment required: Dict with payment details
+            If auto_pay=True or already purchased: None (file downloaded)
         """
         url = f"{self.base_url}/api/agent/datasets/{dataset_id}/download"
 
         response = self.session.get(url, stream=True)
+
+        # Check for HTTP 402 Payment Required
+        if response.status_code == 402:
+            # Try to parse JSON body first (contains more details)
+            try:
+                body = response.json()
+                error_details = body.get('error', {}).get('details', {})
+
+                payment_info = {
+                    'paymentRequired': True,
+                    'amount': response.headers.get('x-payment-amount') or error_details.get('price'),
+                    'currency': response.headers.get('x-payment-currency') or error_details.get('currency', 'USDC'),
+                    'recipient': response.headers.get('x-payment-recipient'),
+                    'network': response.headers.get('x-payment-network') or error_details.get('network', 'solana'),
+                    'message': body.get('error', {}).get('message', 'Payment required'),
+                }
+            except:
+                # Fallback to headers only
+                payment_info = {
+                    'paymentRequired': True,
+                    'amount': response.headers.get('x-payment-amount'),
+                    'currency': response.headers.get('x-payment-currency', 'USDC'),
+                    'recipient': response.headers.get('x-payment-recipient'),
+                    'network': response.headers.get('x-payment-network', 'solana'),
+                    'message': 'Payment required',
+                }
+
+            if not auto_pay:
+                # Return payment details without downloading
+                return payment_info
+            else:
+                # Auto-pay not implemented yet in Python SDK
+                # User needs to pay manually via web UI or implement Solana payment
+                raise Exception(f"Payment required: {payment_info['amount']} {payment_info['currency']}. Please purchase via web UI first.")
+
+        # If not 402, check for other errors
         response.raise_for_status()
 
-        with open(output_path, "wb") as f:
-            for chunk in response.iter_content(chunk_size=8192):
-                f.write(chunk)
+        # Download the file
+        if output_path:
+            with open(output_path, "wb") as f:
+                for chunk in response.iter_content(chunk_size=8192):
+                    f.write(chunk)
+            print(f"✅ Dataset downloaded to {output_path}")
 
-        print(f"✅ Dataset downloaded to {output_path}")
+        return None
 
     def get_purchases(self, page: int = 1, limit: int = 20) -> Dict[str, Any]:
         """
