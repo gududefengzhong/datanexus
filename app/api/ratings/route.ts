@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { verifyApiKey } from '@/lib/api-auth'
+import { verifyToken } from '@/lib/auth'
 import { createProviderRating } from '@/lib/reputation'
 import { syncRatingToChain } from '@/lib/onchain-sync'
 
@@ -81,22 +81,36 @@ import { syncRatingToChain } from '@/lib/onchain-sync'
  */
 export async function POST(request: NextRequest) {
   try {
-    // Verify API key
-    const authResult = await verifyApiKey(request)
-    if (!authResult.valid || !authResult.user) {
+    // Verify authentication
+    const authHeader = request.headers.get('authorization')
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json(
         {
           success: false,
           error: {
             code: 'UNAUTHORIZED',
-            message: 'Invalid or missing API key',
+            message: 'Missing or invalid authorization header',
           },
         },
         { status: 401 }
       )
     }
 
-    const user = authResult.user
+    const token = authHeader.substring(7)
+    const payload = verifyToken(token)
+
+    if (!payload) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: 'UNAUTHORIZED',
+            message: 'Invalid token',
+          },
+        },
+        { status: 401 }
+      )
+    }
 
     // Parse request body
     const body = await request.json()
@@ -142,7 +156,7 @@ export async function POST(request: NextRequest) {
     // Create rating in database
     const newRating = await createProviderRating({
       providerId,
-      buyerId: user.id,
+      buyerId: payload.userId,
       orderId,
       rating,
       comment,

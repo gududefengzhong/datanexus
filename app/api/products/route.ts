@@ -70,14 +70,18 @@ export async function GET(request: NextRequest) {
       where.providerId = payload.userId
     }
 
-    if (category && category !== 'all') {
+    if (category && category !== 'all' && category !== 'All Categories') {
       where.category = category
     }
 
     if (search) {
-      where.OR = [
-        { name: { contains: search, mode: 'insensitive' } },
-        { description: { contains: search, mode: 'insensitive' } },
+      where.AND = [
+        {
+          OR: [
+            { name: { contains: search, mode: 'insensitive' } },
+            { description: { contains: search, mode: 'insensitive' } },
+          ],
+        },
       ]
     }
 
@@ -92,6 +96,13 @@ export async function GET(request: NextRequest) {
           select: {
             id: true,
             walletAddress: true,
+            providerReputation: {
+              select: {
+                reputationScore: true,
+                averageRating: true,
+                badges: true,
+              },
+            },
           },
         },
       },

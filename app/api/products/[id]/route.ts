@@ -27,6 +27,14 @@ export async function GET(
           select: {
             id: true,
             walletAddress: true,
+            providerReputation: {
+              select: {
+                reputationScore: true,
+                averageRating: true,
+                totalRatings: true,
+                badges: true,
+              },
+            },
           },
         },
       },

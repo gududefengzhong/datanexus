@@ -28,6 +28,12 @@ interface Product {
   provider: {
     id: string
     walletAddress: string
+    providerReputation?: {
+      reputationScore: number
+      averageRating: number
+      totalRatings: number
+      badges: string[] | null
+    }
   }
   createdAt: string
   updatedAt: string
@@ -486,11 +492,51 @@ export default function ProductDetailPage() {
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary to-secondary text-white">
                 {product.provider.walletAddress.slice(0, 2).toUpperCase()}
               </div>
-              <div>
+              <div className="flex-1">
                 <div className="font-medium">Wallet Address</div>
                 <div className="font-mono text-sm text-muted-foreground">
                   {product.provider.walletAddress}
                 </div>
+
+                {/* Provider Reputation */}
+                {product.provider.providerReputation && (
+                  <div className="mt-3 flex items-center gap-3">
+                    <div className="flex items-center gap-1">
+                      <span className="text-2xl font-bold text-primary">
+                        {product.provider.providerReputation.reputationScore.toFixed(0)}
+                      </span>
+                      <span className="text-sm text-muted-foreground">/100</span>
+                    </div>
+                    {product.provider.providerReputation.totalRatings > 0 && (
+                      <div className="flex items-center gap-1">
+                        <span className="text-yellow-500">⭐</span>
+                        <span className="font-semibold">
+                          {product.provider.providerReputation.averageRating.toFixed(1)}
+                        </span>
+                        <span className="text-sm text-muted-foreground">
+                          ({product.provider.providerReputation.totalRatings} ratings)
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Provider Badges */}
+                {product.provider.providerReputation?.badges &&
+                 Array.isArray(product.provider.providerReputation.badges) &&
+                 product.provider.providerReputation.badges.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {product.provider.providerReputation.badges.map((badge) => (
+                      <Badge key={badge} variant="secondary" className="text-xs">
+                        {badge === 'verified' && '✅ Verified'}
+                        {badge === 'top-seller' && '🏆 Top Seller'}
+                        {badge === 'trusted' && '🌟 Trusted'}
+                        {badge === 'high-quality' && '💎 High Quality'}
+                        {badge === 'reliable' && '🔒 Reliable'}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>

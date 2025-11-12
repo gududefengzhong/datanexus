@@ -5,9 +5,12 @@ import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 import { getExplorerUrl } from '@/lib/x402'
 import { toast } from 'sonner'
-import { Download } from 'lucide-react'
+import { Download, Star } from 'lucide-react'
 
 interface Order {
   id: string
@@ -27,9 +30,15 @@ interface Order {
     fileType: string
     isEncrypted: boolean
     encryptionMethod?: string
+    providerId: string
     provider: {
       walletAddress: string
     }
+  }
+  rating?: {
+    id: string
+    rating: number
+    comment: string | null
   }
 }
 
@@ -37,6 +46,13 @@ export default function PurchasesPage() {
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
   const [downloading, setDownloading] = useState<string | null>(null)
+
+  // Rating dialog state
+  const [ratingDialogOpen, setRatingDialogOpen] = useState(false)
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
+  const [rating, setRating] = useState(5)
+  const [comment, setComment] = useState('')
+  const [submittingRating, setSubmittingRating] = useState(false)
 
   useEffect(() => {
     fetchOrders()
@@ -93,6 +109,57 @@ export default function PurchasesPage() {
         return 'bg-red-500/10 text-red-600'
       default:
         return 'bg-gray-500/10 text-gray-600'
+    }
+  }
+
+  const handleRatingClick = (order: Order) => {
+    setSelectedOrder(order)
+    setRating(5)
+    setComment('')
+    setRatingDialogOpen(true)
+  }
+
+  const handleSubmitRating = async () => {
+    if (!selectedOrder) return
+
+    setSubmittingRating(true)
+    try {
+      const token = localStorage.getItem('auth_token')
+      if (!token) {
+        throw new Error('Please log in first')
+      }
+
+      const response = await fetch('/api/ratings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          providerId: selectedOrder.product.providerId,
+          orderId: selectedOrder.id,
+          rating,
+          comment: comment || undefined,
+        }),
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error?.message || 'Failed to submit rating')
+      }
+
+      toast.success('Rating submitted successfully!')
+      setRatingDialogOpen(false)
+
+      // Refresh orders to show the new rating
+      fetchOrders()
+    } catch (error) {
+      console.error('Submit rating error:', error)
+      toast.error('Failed to submit rating', {
+        description: error instanceof Error ? error.message : 'Unknown error',
+      })
+    } finally {
+      setSubmittingRating(false)
     }
   }
 
@@ -278,6 +345,32 @@ export default function PurchasesPage() {
                     </div>
                   )}
 
+                  {/* Rating Display */}
+                  {order.rating && (
+                    <div className="rounded-lg bg-muted p-3">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-sm font-medium">Your Rating:</span>
+                        <div className="flex items-center gap-1">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`h-4 w-4 ${
+                                i < order.rating!.rating
+                                  ? 'fill-yellow-500 text-yellow-500'
+                                  : 'text-gray-300'
+                              }`}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                      {order.rating.comment && (
+                        <p className="text-sm text-muted-foreground mt-1">
+                          "{order.rating.comment}"
+                        </p>
+                      )}
+                    </div>
+                  )}
+
                   {/* Actions */}
                   <div className="flex gap-2">
                     {order.status === 'completed' && (
@@ -302,6 +395,16 @@ export default function PurchasesPage() {
                         <Link href={`/products/${order.product.id}`}>
                           <Button variant="outline">View Product</Button>
                         </Link>
+                        {!order.rating && (
+                          <Button
+                            variant="outline"
+                            onClick={() => handleRatingClick(order)}
+                            className="gap-2"
+                          >
+                            <Star className="h-4 w-4" />
+                            Rate Provider
+                          </Button>
+                        )}
                       </>
                     )}
                     {order.status === 'pending' && (
@@ -321,6 +424,89 @@ export default function PurchasesPage() {
           ))}
         </div>
       )}
+
+      {/* Rating Dialog */}
+      <Dialog open={ratingDialogOpen} onOpenChange={setRatingDialogOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Rate Provider</DialogTitle>
+            <DialogDescription>
+              Share your experience with this data provider
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            {/* Product Info */}
+            {selectedOrder && (
+              <div className="rounded-lg bg-muted p-3">
+                <div className="font-medium">{selectedOrder.product.name}</div>
+                <div className="text-sm text-muted-foreground font-mono">
+                  Provider: {selectedOrder.product.provider.walletAddress.slice(0, 8)}...
+                </div>
+              </div>
+            )}
+
+            {/* Star Rating */}
+            <div className="space-y-2">
+              <Label>Rating</Label>
+              <div className="flex items-center gap-2">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => setRating(star)}
+                    className="transition-transform hover:scale-110"
+                  >
+                    <Star
+                      className={`h-8 w-8 ${
+                        star <= rating
+                          ? 'fill-yellow-500 text-yellow-500'
+                          : 'text-gray-300'
+                      }`}
+                    />
+                  </button>
+                ))}
+                <span className="ml-2 text-lg font-semibold">{rating}/5</span>
+              </div>
+            </div>
+
+            {/* Comment */}
+            <div className="space-y-2">
+              <Label htmlFor="comment">Comment (Optional)</Label>
+              <Textarea
+                id="comment"
+                placeholder="Share your experience with this provider..."
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                rows={4}
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setRatingDialogOpen(false)}
+              disabled={submittingRating}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSubmitRating}
+              disabled={submittingRating}
+            >
+              {submittingRating ? (
+                <>
+                  <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                  Submitting...
+                </>
+              ) : (
+                'Submit Rating'
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

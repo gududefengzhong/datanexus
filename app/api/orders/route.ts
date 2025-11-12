@@ -157,12 +157,20 @@ export async function GET(request: NextRequest) {
             fileType: true,
             isEncrypted: true,
             encryptionMethod: true,
+            providerId: true,
             provider: {
               select: {
                 id: true,
                 walletAddress: true,
               },
             },
+          },
+        },
+        rating: {
+          select: {
+            id: true,
+            rating: true,
+            comment: true,
           },
         },
       },

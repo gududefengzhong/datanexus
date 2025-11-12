@@ -34,6 +34,11 @@ interface Product {
   purchases: number
   provider: {
     walletAddress: string
+    providerReputation?: {
+      reputationScore: number
+      averageRating: number
+      badges: string[] | null
+    }
   }
   createdAt: string
   isEncrypted?: boolean
@@ -90,11 +95,18 @@ export default function MarketplacePage() {
   const fetchProducts = async () => {
     setLoading(true)
     try {
+      // Determine sort order based on sortBy
+      let sortOrder = 'desc'
+      if (sortBy === 'price') {
+        // For price, we want low to high by default
+        sortOrder = 'asc'
+      }
+
       const params = new URLSearchParams({
         page: page.toString(),
         limit: '12',
         sortBy,
-        sortOrder: 'desc',
+        sortOrder,
       })
 
       if (search) params.append('search', search)
@@ -246,6 +258,41 @@ export default function MarketplacePage() {
                           {formatWalletAddress(product.provider.walletAddress)}
                         </span>
                       </div>
+
+                      {/* Provider Reputation */}
+                      {product.provider.providerReputation && (
+                        <div className="flex items-center justify-between">
+                          <span className="text-muted-foreground">Reputation</span>
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold text-primary">
+                              {product.provider.providerReputation.reputationScore.toFixed(0)}
+                            </span>
+                            {product.provider.providerReputation.averageRating > 0 && (
+                              <span className="text-xs">
+                                ⭐ {product.provider.providerReputation.averageRating.toFixed(1)}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Provider Badges */}
+                      {product.provider.providerReputation?.badges &&
+                       Array.isArray(product.provider.providerReputation.badges) &&
+                       product.provider.providerReputation.badges.length > 0 && (
+                        <div className="flex flex-wrap gap-1">
+                          {product.provider.providerReputation.badges.slice(0, 3).map((badge) => (
+                            <span key={badge} className="text-xs">
+                              {badge === 'verified' && '✅'}
+                              {badge === 'top-seller' && '🏆'}
+                              {badge === 'trusted' && '🌟'}
+                              {badge === 'high-quality' && '💎'}
+                              {badge === 'reliable' && '🔒'}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
                       <div className="flex items-center justify-between border-t pt-2">
                         <span className="text-muted-foreground">👁️ {product.views}</span>
                         <span className="text-muted-foreground">🛒 {product.purchases}</span>
