@@ -1,115 +1,95 @@
 # DataNexus Python SDK
 
-A simple Python client for the DataNexus AI Agent API.
+Complete x402 protocol client with EigenAI verifiable inference support.
 
 ## Installation
 
 ```bash
-pip install requests
+pip install requests solana spl-token base58
 ```
 
 ## Quick Start
 
 ### 1. Get Your API Key
 
-1. Visit http://localhost:3000/dashboard/api-keys
+1. Visit https://xdatanexus.vercel.app/settings/api-keys
 2. Create a new API key
 3. Copy the key (it won't be shown again!)
 
 ### 2. Initialize the Client
 
 ```python
-from datanexus_client import DataNexusClient
+from x402_example import SimpleX402Client
 
-client = DataNexusClient(api_key="your_api_key_here")
+# Initialize with x402 support
+client = SimpleX402Client(
+    api_key="your_api_key_here",
+    solana_private_key="your_solana_private_key",  # Base58 encoded
+    base_url="https://xdatanexus.vercel.app"
+)
 ```
 
 ### 3. Search for Datasets
 
 ```python
-# Search for Solana blockchain data
-results = client.search_datasets(
-    query="solana",
-    category="blockchain",
-    max_price=50
+# Search for DeFi data
+datasets = client.search_datasets(
+    query="DeFi",
+    category="defi",
+    max_price=1.0
 )
 
-print(f"Found {results['data']['pagination']['total']} datasets")
+print(f"Found {len(datasets)} datasets")
 
-for dataset in results['data']['datasets']:
+for dataset in datasets:
     print(f"- {dataset['name']} (${dataset['price']})")
 ```
 
-### 4. Preview a Dataset (Free!)
+### 4. x402 Autonomous Purchase & Download
 
 ```python
-# Preview first 10 rows
-preview = client.preview_dataset(dataset_id="...")
+# Autonomous x402 payment flow
+if datasets:
+    dataset_id = datasets[0]['id']
 
-print(f"Total rows: {preview['data']['totalRows']}")
-print(f"Columns: {', '.join(preview['data']['columns'])}")
-print(f"Preview data:")
-for row in preview['data']['preview']:
-    print(row)
+    # This will automatically:
+    # 1. Attempt download → Receive HTTP 402
+    # 2. Make Solana USDC payment
+    # 3. Retry with payment proof
+    # 4. Download dataset
+    data = client.download_dataset(dataset_id)
+
+    print(f"✅ Downloaded {len(data)} bytes")
 ```
 
-### 5. Purchase a Dataset
-
-#### Option A: Solana Payment
+### 5. EigenAI Verifiable Inference
 
 ```python
-# First, make a Solana payment to the provider's wallet
-# Then confirm the purchase with the transaction hash
-
-order = client.purchase_dataset(
-    dataset_id="...",
-    payment_method="solana",
-    payment_tx_hash="your_solana_tx_hash"
+# Analyze dataset with EigenAI
+analysis = client.analyze_dataset(
+    dataset_id=dataset_id,
+    prompt="Analyze this DeFi protocol data and provide trading insights",
+    model="gpt-oss-120b-f16",
+    analysis_type="trading-signals"  # or "sentiment", "general"
 )
 
-print(f"Order ID: {order['data']['id']}")
-print(f"Status: {order['data']['status']}")
+if analysis.get('success'):
+    data = analysis['data']
+    print(f"✅ Analysis: {data.get('analysis')}")
+    print(f"Verified: {data.get('verified', False)}")
+
+    # Cryptographic proof
+    if data.get('proof'):
+        print(f"Proof: {data['proof'][:40]}...")
 ```
 
-#### Option B: x402 Micropayment
-
-```python
-# Create x402 payment
-payment = client.create_x402_payment(
-    product_id="...",
-    amount=10.0
-)
-
-print(f"Payment URL: {payment['data']['x402Url']}")
-
-# After payment is completed, verify it
-verification = client.verify_x402_payment(
-    payment_id=payment['data']['paymentId'],
-    x402_token="your_x402_token"
-)
-
-print(f"Verified: {verification['data']['verified']}")
-```
-
-### 6. Download a Dataset
-
-```python
-# Download to local file
-client.download_dataset(
-    dataset_id="...",
-    output_path="./data/my_dataset.csv"
-)
-
-print("✅ Dataset downloaded!")
-```
-
-### 7. View Purchase History
+### 6. View Purchase History
 
 ```python
 purchases = client.get_purchases()
 
-for purchase in purchases['data']['purchases']:
-    print(f"- {purchase['product']['name']}")
+for purchase in purchases:
+    print(f"- {purchase['datasetName']}")
     print(f"  Amount: ${purchase['amount']}")
     print(f"  Downloads: {purchase['downloadCount']}")
 ```
@@ -117,71 +97,62 @@ for purchase in purchases['data']['purchases']:
 ## Complete Example
 
 ```python
-from datanexus_client import DataNexusClient
+from x402_example import SimpleX402Client
 
 # Initialize client
-client = DataNexusClient(api_key="your_api_key_here")
-
-# 1. Search for datasets
-print("🔍 Searching for datasets...")
-results = client.search_datasets(
-    query="transaction",
-    category="blockchain",
-    max_price=100,
-    sort_by="purchases",
-    order="desc"
+client = SimpleX402Client(
+    api_key="your_api_key",
+    solana_private_key="your_solana_private_key",
+    base_url="https://xdatanexus.vercel.app"
 )
 
-if not results['data']['datasets']:
+# 1. Search for datasets
+print("🔍 Searching for DeFi datasets...")
+datasets = client.search_datasets(
+    query="DeFi",
+    category="defi",
+    max_price=1.0
+)
+
+if not datasets:
     print("No datasets found")
     exit()
 
-# 2. Get the most popular dataset
-dataset = results['data']['datasets'][0]
+# 2. Select dataset
+dataset = datasets[0]
 print(f"\n📊 Selected: {dataset['name']}")
 print(f"   Price: ${dataset['price']}")
-print(f"   Purchases: {dataset['purchases']}")
 
-# 3. Preview the data
-print(f"\n👁️ Previewing data...")
-try:
-    preview = client.preview_dataset(dataset['id'])
-    print(f"   Columns: {', '.join(preview['data']['columns'])}")
-    print(f"   Sample data:")
-    for i, row in enumerate(preview['data']['preview'][:3], 1):
-        print(f"   {i}. {row}")
-except Exception as e:
-    print(f"   Preview not available: {e}")
+# 3. Autonomous x402 purchase & download
+print(f"\n💰 Purchasing with x402 protocol...")
+data = client.download_dataset(dataset['id'])
+print(f"✅ Downloaded {len(data)} bytes")
 
-# 4. Purchase the dataset
-print(f"\n💰 Purchasing dataset...")
-# Note: Replace with actual Solana transaction hash
-order = client.purchase_dataset(
+# 4. Analyze with EigenAI
+print(f"\n🤖 Analyzing with EigenAI...")
+analysis = client.analyze_dataset(
     dataset_id=dataset['id'],
-    payment_method="solana",
-    payment_tx_hash="your_actual_tx_hash_here"
+    prompt="Analyze this DeFi data and provide insights",
+    model="gpt-oss-120b-f16",
+    analysis_type="trading-signals"
 )
-print(f"   Order ID: {order['data']['id']}")
 
-# 5. Download the dataset
-print(f"\n📥 Downloading dataset...")
-client.download_dataset(
-    dataset_id=dataset['id'],
-    output_path=f"./{dataset['fileName']}"
-)
+if analysis.get('success'):
+    print(f"✅ Analysis: {analysis['data'].get('analysis')}")
 
 print("\n✅ Done!")
 ```
 
 ## API Reference
 
-### `DataNexusClient(api_key, base_url)`
+### `SimpleX402Client(api_key, solana_private_key, base_url)`
 
-Initialize the client.
+Initialize the x402 client with EigenAI support.
 
 **Parameters:**
 - `api_key` (str): Your API key
-- `base_url` (str, optional): API base URL (default: http://localhost:3000)
+- `solana_private_key` (str): Solana wallet private key (base58 encoded)
+- `base_url` (str, optional): API base URL (default: https://xdatanexus.vercel.app)
 
 ### `search_datasets(**kwargs)`
 
@@ -208,81 +179,70 @@ Get dataset details.
 
 **Returns:** Dict with dataset details
 
-### `preview_dataset(dataset_id)`
+### `download_dataset(dataset_id)`
 
-Preview first 10 rows (free).
-
-**Parameters:**
-- `dataset_id` (str): Dataset ID
-
-**Returns:** Dict with preview data
-
-### `purchase_dataset(dataset_id, payment_method, **kwargs)`
-
-Purchase a dataset.
+Download a dataset with autonomous x402 payment.
 
 **Parameters:**
 - `dataset_id` (str): Dataset ID
-- `payment_method` (str): "solana" or "x402"
-- `payment_tx_hash` (str, optional): Solana transaction hash
-- `x402_token` (str, optional): x402 payment token
 
-**Returns:** Dict with order details
+**Returns:** bytes - Dataset content
 
-### `download_dataset(dataset_id, output_path)`
+**x402 Flow:**
+1. Attempts download → Receives HTTP 402
+2. Extracts payment details from headers
+3. Makes Solana USDC payment to provider
+4. Retries download with payment proof
+5. Returns dataset content
 
-Download a purchased dataset.
+### `analyze_dataset(dataset_id, prompt, model, analysis_type)`
+
+Analyze dataset with EigenAI verifiable inference.
 
 **Parameters:**
 - `dataset_id` (str): Dataset ID
-- `output_path` (str): Path to save the file
+- `prompt` (str): Analysis prompt
+- `model` (str, optional): AI model (default: "gpt-oss-120b-f16")
+- `analysis_type` (str, optional): "general", "sentiment", or "trading-signals"
 
-### `get_purchases(page, limit)`
+**Returns:** Dict with analysis result and cryptographic proof
+
+**Features:**
+- 1M free inference tokens (deTERMinal grant)
+- Cryptographic proof of inference
+- Auto-decryption for encrypted datasets
+
+### `get_purchases()`
 
 Get purchase history.
 
-**Parameters:**
-- `page` (int, optional): Page number (default: 1)
-- `limit` (int, optional): Items per page (default: 20)
+**Returns:** List of purchases with download counts
 
-**Returns:** Dict with purchases and pagination info
+## Features
 
-### `create_x402_payment(product_id, amount)`
+### ✅ x402 Protocol
+- HTTP 402 Payment Required standard
+- Autonomous payment handling
+- Direct Solana USDC transfers
+- PayAI Facilitator verification
+- Blockchain fallback verification
 
-Create an x402 payment.
+### ✅ EigenAI Integration
+- Verifiable AI inference
+- 1M free tokens (deTERMinal grant)
+- Cryptographic proof
+- Multiple analysis types
+- Auto-decryption support
 
-**Parameters:**
-- `product_id` (str): Product ID
-- `amount` (float): Payment amount
-
-**Returns:** Dict with payment details
-
-### `verify_x402_payment(payment_id, x402_token)`
-
-Verify an x402 payment.
-
-**Parameters:**
-- `payment_id` (str): Payment ID
-- `x402_token` (str): x402 payment token
-
-**Returns:** Dict with verification result
-
-## Error Handling
-
-```python
-try:
-    results = client.search_datasets(query="test")
-except Exception as e:
-    print(f"Error: {e}")
-```
-
-## Rate Limits
-
-- Free tier: 100 requests/hour
-- Paid tier: 1000 requests/hour
+### ✅ Developer Friendly
+- Simple 3-line integration
+- Automatic retry logic
+- Detailed error messages
+- Production-ready
 
 ## Support
 
-- Documentation: http://localhost:3000/docs/api
-- Issues: https://github.com/datanexus/datanexus/issues
+- **Documentation**: https://xdatanexus.vercel.app/docs
+- **GitHub**: https://github.com/gududefengzhong/datanexus
+- **Email**: greennft.eth@gmail.com
 

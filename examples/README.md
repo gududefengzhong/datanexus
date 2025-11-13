@@ -7,9 +7,7 @@ This directory contains examples and SDKs for integrating with DataNexus.
 ```
 examples/
 ├── python-sdk/              # Python SDK for AI agents
-│   ├── datanexus_client.py  # Main client library
-│   ├── x402_example.py      # x402 payment flow example
-│   ├── demo_test.py         # Testing script
+│   ├── x402_example.py      # Complete x402 + EigenAI client
 │   └── README.md            # SDK documentation
 ├── demo_x402_complete_flow.py  # Complete x402 demo (for hackathon)
 └── requirements.txt         # Python dependencies
@@ -29,8 +27,8 @@ Create a `.env` file or set environment variables:
 
 ```bash
 export DATANEXUS_API_KEY="your_api_key"
-export SOLANA_PRIVATE_KEY="your_solana_private_key"  # Optional, for payments
-export DATANEXUS_BASE_URL="https://datanexus-huhiyohb8-rochestors-projects.vercel.app"
+export SOLANA_PRIVATE_KEY="your_solana_private_key"  # For x402 payments
+export DATANEXUS_BASE_URL="https://xdatanexus.vercel.app"
 ```
 
 ### 3. Run Examples
@@ -57,28 +55,22 @@ cd examples/python-sdk
 python x402_example.py
 ```
 
-#### Test Suite
-
-```bash
-cd examples/python-sdk
-python demo_test.py
-```
-
 ## 📚 Python SDK Usage
 
 ### Basic Usage
 
 ```python
-from datanexus_client import DataNexusClient
+from x402_example import SimpleX402Client
 
-# Initialize client
-client = DataNexusClient(
+# Initialize client with x402 support
+client = SimpleX402Client(
     api_key="your_api_key",
-    base_url="https://datanexus-huhiyohb8-rochestors-projects.vercel.app"
+    solana_private_key="your_solana_private_key",
+    base_url="https://xdatanexus.vercel.app"
 )
 
 # Search datasets
-result = client.search_datasets(
+datasets = client.search_datasets(
     query="DeFi",
     category="defi",
     max_price=1.0
@@ -88,53 +80,67 @@ result = client.search_datasets(
 dataset = client.get_dataset(dataset_id)
 
 # Get purchase history
-purchases = client.get_purchase_history()
+purchases = client.get_purchases()
 ```
 
-### x402 Payment Flow
+### x402 Autonomous Payment Flow
 
 ```python
 from x402_example import SimpleX402Client
 
-# Initialize client with Solana private key
+# Initialize client
 client = SimpleX402Client(
     api_key="your_api_key",
     solana_private_key="your_solana_private_key",
-    base_url="https://datanexus-huhiyohb8-rochestors-projects.vercel.app"
+    base_url="https://xdatanexus.vercel.app"
 )
 
 # Search for datasets
 datasets = client.search_datasets(category="defi")
 
-# Purchase and download (automatic x402 payment)
+# Autonomous purchase and download (x402 protocol)
 if datasets:
     dataset_id = datasets[0]['id']
-    
-    # This will:
-    # 1. Attempt download
-    # 2. Receive HTTP 402
-    # 3. Make Solana payment
-    # 4. Retry with payment proof
-    # 5. Download dataset
+
+    # x402 Protocol Flow:
+    # 1. Attempt download → Receive HTTP 402 Payment Required
+    # 2. Extract payment details from headers
+    # 3. Make DIRECT Solana USDC payment to provider
+    # 4. Retry download with payment proof (tx signature)
+    # 5. Server verifies payment via PayAI Facilitator
+    # 6. Download dataset
     data = client.download_dataset(dataset_id)
-    
-    print(f"Downloaded {len(data)} bytes")
+
+    print(f"✅ Downloaded {len(data)} bytes")
 ```
 
-### AI Analysis with EigenAI
+### EigenAI Verifiable Inference
 
 ```python
-# Request verifiable AI analysis
+# Request verifiable AI analysis with cryptographic proof
 analysis = client.analyze_dataset(
     dataset_id=dataset_id,
-    prompt="Analyze this DeFi dataset and provide insights"
+    prompt="Analyze this DeFi protocol data and provide trading insights",
+    model="gpt-oss-120b-f16",  # EigenAI model
+    analysis_type="trading-signals"  # or "sentiment", "general"
 )
 
 # Check verification proof
-if analysis.get('verifiable'):
-    print(f"✅ Verified analysis from {analysis['model']}")
-    print(f"Signature: {analysis['signature']}")
-    print(f"Result: {analysis['result']}")
+if analysis.get('success'):
+    data = analysis['data']
+    print(f"✅ Verified analysis from {data.get('model')}")
+    print(f"Analysis: {data.get('analysis')}")
+
+    # Cryptographic proof
+    if data.get('proof'):
+        print(f"Proof Hash: {data['proof'][:40]}...")
+        print(f"Verified: {data.get('verified', False)}")
+
+# EigenAI Features:
+# - 1M free inference tokens (deTERMinal grant)
+# - Cryptographic proof of inference
+# - Multiple analysis types (general, sentiment, trading-signals)
+# - Support for encrypted datasets (auto-decryption)
 ```
 
 ## 🔑 Environment Variables
@@ -149,8 +155,8 @@ if analysis.get('verifiable'):
 ## 📖 API Documentation
 
 Full API documentation is available at:
-- **Production**: https://datanexus-huhiyohb8-rochestors-projects.vercel.app/docs
-- **API Reference**: https://datanexus-huhiyohb8-rochestors-projects.vercel.app/docs/api-reference
+- **Production**: https://xdatanexus.vercel.app/docs
+- **API Reference**: https://xdatanexus.vercel.app/docs/api-reference
 
 ## 🎯 Use Cases
 
@@ -200,22 +206,17 @@ for category in categories:
 
 ## 🧪 Testing
 
-### Run All Tests
+### Run Complete x402 Flow Demo
+
+```bash
+# Recommended: Complete hackathon demo
+python examples/demo_x402_complete_flow.py
+```
+
+### Test x402 Client Directly
 
 ```bash
 cd examples/python-sdk
-python demo_test.py
-```
-
-### Test Specific Features
-
-```python
-# Test search
-python -c "from datanexus_client import DataNexusClient; \
-           client = DataNexusClient('your_api_key'); \
-           print(client.search_datasets(limit=5))"
-
-# Test x402 flow
 python x402_example.py
 ```
 
@@ -243,9 +244,8 @@ Solution: Check DATANEXUS_BASE_URL is correct
 
 ### Get Help
 
-- **Documentation**: https://datanexus-huhiyohb8-rochestors-projects.vercel.app/docs
+- **Documentation**: https://xdatanexus.vercel.app/docs
 - **GitHub Issues**: https://github.com/gududefengzhong/datanexus/issues
-- **Discord**: https://discord.gg/x402
 - **Email**: greennft.eth@gmail.com
 
 ## 📝 Requirements
@@ -256,26 +256,33 @@ Solution: Check DATANEXUS_BASE_URL is correct
 
 ## 🚀 Next Steps
 
-1. **Get API Key**: Visit https://datanexus-huhiyohb8-rochestors-projects.vercel.app/settings/api-keys
+1. **Get API Key**: Visit https://xdatanexus.vercel.app/settings/api-keys
 2. **Fund Wallet**: Get SOL from https://faucet.solana.com
 3. **Get USDC**: Swap SOL for USDC on https://jup.ag (Devnet)
-4. **Run Examples**: Try the examples above
+4. **Run Demo**: `python examples/demo_x402_complete_flow.py`
 5. **Build Your Agent**: Use the SDK to build your own AI agent
 
 ## 📚 Additional Resources
 
-- **Buyer's Guide**: https://datanexus-huhiyohb8-rochestors-projects.vercel.app/docs/buyer-guide
-- **Seller's Guide**: https://datanexus-huhiyohb8-rochestors-projects.vercel.app/docs/seller-guide
-- **API Reference**: https://datanexus-huhiyohb8-rochestors-projects.vercel.app/docs/api-reference
-- **User Stories**: https://datanexus-huhiyohb8-rochestors-projects.vercel.app/docs/user-stories
+- **Documentation**: https://xdatanexus.vercel.app/docs
+- **API Reference**: https://xdatanexus.vercel.app/docs/api-reference
+- **GitHub**: https://github.com/gududefengzhong/datanexus
 
 ## 🎉 Built for Solana x402 Hackathon 2025
 
 This SDK demonstrates the complete x402 protocol integration on Solana, enabling autonomous AI agents to purchase and analyze data with real blockchain payments.
 
-**Track**: Best x402 Agent Application  
-**Prize**: $20,000  
-**Submission**: November 11, 2025
+**Tracks**:
+- 🥇 Best x402 Agent Application ($20,000)
+- 🏆 Best Trustless Agent ($10,000)
+- 💎 Best x402 API Integration ($10,000)
+
+**Key Features**:
+- ✅ HTTP 402 Payment Required protocol
+- ✅ Direct Solana USDC payments (no intermediary)
+- ✅ EigenAI verifiable inference (1M tokens)
+- ✅ Provider reputation system
+- ✅ Hybrid encryption (AES-256 + RSA)
 
 ---
 
