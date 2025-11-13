@@ -283,11 +283,48 @@ export async function POST(
       );
     }
 
-    // 5. Get dataset content from Irys
-    const datasetContent = await getDatasetContent(dataset.irysTransactionId);
+    // 5. Get dataset content from Irys (with decryption if needed)
+    console.log('[Analyze API] Fetching dataset content from Irys...');
+    console.log('[Analyze API] Irys Transaction ID:', dataset.irysTransactionId);
+    console.log('[Analyze API] Is Encrypted:', dataset.isEncrypted);
+    console.log('[Analyze API] Encryption Method:', dataset.encryptionMethod);
+
+    const datasetContent = await getDatasetContent(
+      dataset.irysTransactionId,
+      dataset.isEncrypted,
+      dataset.encryptionMethod,
+      dataset.fileUrl,
+      dataset.encryptionKeyCiphertext,
+      dataset.encryptionKeyIv,
+      dataset.encryptionKeyAuthTag
+    );
+
+    console.log('[Analyze API] Dataset content retrieved:');
+    console.log('[Analyze API] Content length:', datasetContent?.length || 0);
+    console.log('[Analyze API] Content type:', typeof datasetContent);
+    console.log('[Analyze API] Content preview:', datasetContent?.substring(0, 200) + '...');
+
+    // Check if content is valid
+    if (!datasetContent || datasetContent.length === 0) {
+      console.error('[Analyze API] Dataset content is empty!');
+      return NextResponse.json(
+        { success: false, error: 'Dataset content is empty or could not be retrieved' },
+        { status: 500 }
+      );
+    }
 
     // 6. Initialize EigenAI client
+    console.log('[Analyze API] Initializing EigenAI client...');
+    console.log('[Analyze API] Environment check:', {
+      hasEthPrivateKey: !!process.env.ETH_PRIVATE_KEY,
+      hasEthAddress: !!process.env.ETH_ADDRESS,
+      hasApiUrl: !!process.env.EIGENAI_API_URL,
+      ethAddress: process.env.ETH_ADDRESS,
+      apiUrl: process.env.EIGENAI_API_URL,
+    });
+
     const eigenai = getEigenAIClient();
+    console.log('[Analyze API] EigenAI client initialized successfully');
 
     // 7. Perform verifiable AI inference based on analysis type
     let analysis;
@@ -336,31 +373,39 @@ export async function POST(
     });
 
   } catch (error) {
-    console.error('AI analysis error:', error);
-    
+    console.error('[Analyze API] AI analysis error:', error);
+    console.error('[Analyze API] Error type:', error instanceof Error ? 'Error' : typeof error);
+    console.error('[Analyze API] Error message:', error instanceof Error ? error.message : String(error));
+    console.error('[Analyze API] Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+
     // Handle specific EigenAI errors
     if (error instanceof Error) {
       if (error.message.includes('authentication failed')) {
         return NextResponse.json(
-          { success: false, error: 'EigenAI authentication failed. Please contact support.' },
+          { success: false, error: 'EigenAI authentication failed. Please contact support.', details: error.message },
           { status: 500 }
         );
       } else if (error.message.includes('rate limit')) {
         return NextResponse.json(
-          { success: false, error: 'Too many requests. Please try again later.' },
+          { success: false, error: 'Too many requests. Please try again later.', details: error.message },
           { status: 429 }
         );
       } else if (error.message.includes('tokens exhausted')) {
         return NextResponse.json(
-          { success: false, error: 'AI inference quota exhausted. Please contact support.' },
+          { success: false, error: 'AI inference quota exhausted. Please contact support.', details: error.message },
           { status: 402 }
+        );
+      } else if (error.message.includes('ETH private key')) {
+        return NextResponse.json(
+          { success: false, error: 'EigenAI configuration error. Please check environment variables.', details: error.message },
+          { status: 500 }
         );
       }
     }
-    
+
     return NextResponse.json(
-      { 
-        success: false, 
+      {
+        success: false,
         error: 'Failed to analyze dataset',
         details: error instanceof Error ? error.message : 'Unknown error'
       },
@@ -370,27 +415,106 @@ export async function POST(
 }
 
 /**
- * Fetch dataset content from Irys
+ * Fetch dataset content from Irys (with decryption support)
  */
-async function getDatasetContent(irysId: string): Promise<string> {
+async function getDatasetContent(
+  irysId: string,
+  isEncrypted: boolean = false,
+  encryptionMethod: string | null = null,
+  fileUrl: string | null = null,
+  encryptionKeyCiphertext: string | null = null,
+  encryptionKeyIv: string | null = null,
+  encryptionKeyAuthTag: string | null = null
+): Promise<string> {
+  console.log('[getDatasetContent] Fetching content for Irys ID:', irysId);
+  console.log('[getDatasetContent] Is Encrypted:', isEncrypted);
+
   // For demo datasets (mock Irys IDs), return sample data
   if (irysId.startsWith('sample_') || irysId.startsWith('demo_')) {
-    console.log('[Analyze] Using mock data for demo dataset');
+    console.log('[getDatasetContent] Using mock data for demo dataset');
     return getMockDatasetContent(irysId);
   }
 
   try {
-    const response = await fetch(`https://gateway.irys.xyz/${irysId}`);
+    const url = fileUrl || `https://gateway.irys.xyz/${irysId}`;
+    console.log('[getDatasetContent] Fetching from URL:', url);
+
+    const response = await fetch(url);
+    console.log('[getDatasetContent] Response status:', response.status);
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch dataset from Irys: ${response.statusText}`);
+      const errorText = await response.text();
+      console.error('[getDatasetContent] Error response:', errorText);
+      throw new Error(`Failed to fetch dataset from Irys: ${response.status} ${response.statusText}`);
     }
 
-    const content = await response.text();
-    return content;
+    // If encrypted, decrypt the content
+    if (isEncrypted && encryptionMethod === 'hybrid') {
+      console.log('[getDatasetContent] Decrypting encrypted content...');
+
+      const encryptedBuffer = Buffer.from(await response.arrayBuffer());
+
+      // Get IV and AuthTag from Irys metadata
+      const metadataUrl = `https://gateway.irys.xyz/tx/${url.split('/').pop()}`;
+      const metadataResponse = await fetch(metadataUrl);
+      const metadata = await metadataResponse.json();
+
+      const iv = metadata.tags?.find((t: any) => t.name === 'Encryption-IV')?.value;
+      const authTag = metadata.tags?.find((t: any) => t.name === 'Encryption-AuthTag')?.value;
+
+      if (!iv || !authTag) {
+        throw new Error('Missing encryption metadata');
+      }
+
+      // Decrypt encryption key
+      const masterKey = process.env.MASTER_ENCRYPTION_KEY;
+      if (!masterKey) {
+        throw new Error('Master encryption key not configured');
+      }
+
+      if (!encryptionKeyCiphertext || !encryptionKeyIv || !encryptionKeyAuthTag) {
+        throw new Error('Missing encryption key data');
+      }
+
+      const { decryptData } = await import('@/lib/encryption');
+
+      const encryptionKeyBuffer = decryptData(
+        encryptionKeyCiphertext,
+        encryptionKeyIv,
+        encryptionKeyAuthTag,
+        masterKey
+      );
+
+      const encryptionKey = encryptionKeyBuffer.toString('utf-8');
+
+      // Decrypt file
+      const decryptedBuffer = decryptData(
+        encryptedBuffer.toString('base64'),
+        iv,
+        authTag,
+        encryptionKey
+      );
+
+      const content = decryptedBuffer.toString('utf-8');
+      console.log('[getDatasetContent] Content decrypted, length:', content.length);
+      console.log('[getDatasetContent] Content preview:', content.substring(0, 200));
+
+      return content;
+    } else {
+      // Non-encrypted content
+      const content = await response.text();
+      console.log('[getDatasetContent] Content retrieved, length:', content.length);
+      console.log('[getDatasetContent] Content preview:', content.substring(0, 200));
+
+      return content;
+    }
   } catch (error) {
-    console.error('Error fetching dataset from Irys:', error);
-    throw new Error('Failed to retrieve dataset content');
+    console.error('[getDatasetContent] Error fetching dataset from Irys:', error);
+    console.error('[getDatasetContent] Error details:', {
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
+    throw new Error(`Failed to retrieve dataset content: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
 

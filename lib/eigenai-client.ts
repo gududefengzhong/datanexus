@@ -54,8 +54,25 @@ export class EigenAIClient {
       ethAddress: config?.ethAddress || process.env.ETH_ADDRESS || '',
     };
 
+    // Debug: Log environment variables (only in development)
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[EigenAI] Environment check:', {
+        hasApiUrl: !!this.config.apiUrl,
+        hasPrivateKey: !!this.config.ethPrivateKey,
+        hasAddress: !!this.config.ethAddress,
+        apiUrl: this.config.apiUrl,
+        address: this.config.ethAddress,
+      });
+    }
+
     // Validate configuration
     if (!this.config.ethPrivateKey || !this.config.ethAddress) {
+      console.error('[EigenAI] Configuration error:', {
+        ethPrivateKey: this.config.ethPrivateKey ? 'Set' : 'Missing',
+        ethAddress: this.config.ethAddress ? 'Set' : 'Missing',
+        envEthPrivateKey: process.env.ETH_PRIVATE_KEY ? 'Set' : 'Missing',
+        envEthAddress: process.env.ETH_ADDRESS ? 'Set' : 'Missing',
+      });
       throw new Error('ETH private key and address are required. Please set ETH_PRIVATE_KEY and ETH_ADDRESS in .env.local');
     }
 

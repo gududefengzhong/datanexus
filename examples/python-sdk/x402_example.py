@@ -61,8 +61,15 @@ class SimpleX402Client:
         self.base_url = base_url
         self.solana_rpc_url = solana_rpc_url
 
-        # Initialize Solana client
-        self.solana_client = Client(solana_rpc_url)
+        # Backup RPC URLs in case primary fails
+        self.backup_rpc_urls = [
+            "https://api.devnet.solana.com",
+            "https://rpc.ankr.com/solana_devnet",
+            "https://solana-devnet-rpc.allthatnode.com",
+        ]
+
+        # Initialize Solana client with retry
+        self.solana_client = self._init_solana_client(solana_rpc_url)
 
         # Load private key from parameter or environment
         if solana_private_key:
@@ -77,6 +84,35 @@ class SimpleX402Client:
             "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json"
         })
+
+    def _init_solana_client(self, rpc_url: str) -> Client:
+        """Initialize Solana client with fallback to backup RPCs"""
+        try:
+            client = Client(rpc_url)
+            # Test connection
+            client.get_latest_blockhash()
+            print(f"✅ Connected to Solana RPC: {rpc_url}")
+            return client
+        except Exception as e:
+            print(f"⚠️  Primary RPC failed ({rpc_url}): {str(e)[:50]}")
+
+            # Try backup RPCs
+            for backup_url in self.backup_rpc_urls:
+                if backup_url == rpc_url:
+                    continue
+                try:
+                    print(f"   Trying backup RPC: {backup_url}")
+                    client = Client(backup_url)
+                    client.get_latest_blockhash()
+                    print(f"   ✅ Connected to backup RPC: {backup_url}")
+                    self.solana_rpc_url = backup_url
+                    return client
+                except Exception as backup_error:
+                    print(f"   ❌ Backup RPC failed: {str(backup_error)[:50]}")
+                    continue
+
+            # All RPCs failed
+            raise Exception("Failed to connect to any Solana RPC node")
 
     def _load_keypair(self, private_key: str) -> Keypair:
         """Load Solana keypair from private key string"""
@@ -144,74 +180,98 @@ class SimpleX402Client:
             print(f"\n❌ Payment failed: {str(e)}")
             return None
 
-    def _transfer_usdc(self, recipient_address: str, amount_lamports: int) -> str:
+    def _transfer_usdc(self, recipient_address: str, amount_lamports: int, max_retries: int = 3) -> str:
         """
-        Transfer USDC tokens on Solana
+        Transfer USDC tokens on Solana with retry mechanism
 
         Args:
             recipient_address: Recipient's Solana address
             amount_lamports: Amount in lamports (USDC has 6 decimals)
+            max_retries: Maximum number of retry attempts
 
         Returns:
             Transaction signature
         """
-        # Get sender's USDC token account
-        sender_token_account = self._get_associated_token_address(
-            str(self.keypair.pubkey()),
-            self.USDC_MINT_DEVNET
-        )
+        import time
 
-        # Get recipient's USDC token account
-        recipient_token_account = self._get_associated_token_address(
-            recipient_address,
-            self.USDC_MINT_DEVNET
-        )
+        for attempt in range(max_retries):
+            try:
+                print(f"\n🔄 Attempt {attempt + 1}/{max_retries}...")
 
-        # Create transfer instruction
-        transfer_ix = transfer_checked(
-            TransferCheckedParams(
-                program_id=TOKEN_PROGRAM_ID,
-                source=Pubkey.from_string(sender_token_account),
-                mint=Pubkey.from_string(self.USDC_MINT_DEVNET),
-                dest=Pubkey.from_string(recipient_token_account),
-                owner=self.keypair.pubkey(),
-                amount=amount_lamports,
-                decimals=self.USDC_DECIMALS,
-            )
-        )
+                # Get sender's USDC token account
+                sender_token_account = self._get_associated_token_address(
+                    str(self.keypair.pubkey()),
+                    self.USDC_MINT_DEVNET
+                )
 
-        # Create transaction
-        recent_blockhash = self.solana_client.get_latest_blockhash().value.blockhash
+                # Get recipient's USDC token account
+                recipient_token_account = self._get_associated_token_address(
+                    recipient_address,
+                    self.USDC_MINT_DEVNET
+                )
 
-        # Build transaction with new API
-        from solders.message import Message
-        message = Message.new_with_blockhash(
-            [transfer_ix],
-            self.keypair.pubkey(),
-            recent_blockhash
-        )
-        transaction = Transaction([self.keypair], message, recent_blockhash)
+                # Create transfer instruction
+                transfer_ix = transfer_checked(
+                    TransferCheckedParams(
+                        program_id=TOKEN_PROGRAM_ID,
+                        source=Pubkey.from_string(sender_token_account),
+                        mint=Pubkey.from_string(self.USDC_MINT_DEVNET),
+                        dest=Pubkey.from_string(recipient_token_account),
+                        owner=self.keypair.pubkey(),
+                        amount=amount_lamports,
+                        decimals=self.USDC_DECIMALS,
+                    )
+                )
 
-        # Send transaction
-        result = self.solana_client.send_transaction(
-            transaction,
-            opts=TxOpts(skip_preflight=False, preflight_commitment="confirmed")
-        )
+                # Create transaction
+                print("   Getting latest blockhash...")
+                recent_blockhash = self.solana_client.get_latest_blockhash().value.blockhash
 
-        # Wait for confirmation
-        from solders.signature import Signature
-        signature = str(result.value)
+                # Build transaction with new API
+                from solders.message import Message
+                message = Message.new_with_blockhash(
+                    [transfer_ix],
+                    self.keypair.pubkey(),
+                    recent_blockhash
+                )
+                transaction = Transaction([self.keypair], message, recent_blockhash)
 
-        # Convert string to Signature object for confirmation
-        try:
-            sig_obj = Signature.from_string(signature)
-            self.solana_client.confirm_transaction(sig_obj, commitment="confirmed")
-        except Exception as e:
-            # If confirmation fails, still return the signature
-            print(f"⚠️  Confirmation warning: {e}")
-            print(f"   Transaction may still be processing...")
+                # Send transaction
+                print("   Sending transaction...")
+                result = self.solana_client.send_transaction(
+                    transaction,
+                    opts=TxOpts(skip_preflight=False, preflight_commitment="confirmed")
+                )
 
-        return signature
+                # Wait for confirmation
+                from solders.signature import Signature
+                signature = str(result.value)
+                print(f"   Transaction sent: {signature[:20]}...")
+
+                # Convert string to Signature object for confirmation
+                try:
+                    print("   Waiting for confirmation...")
+                    sig_obj = Signature.from_string(signature)
+                    self.solana_client.confirm_transaction(sig_obj, commitment="confirmed")
+                    print("   ✅ Transaction confirmed!")
+                except Exception as e:
+                    # If confirmation fails, still return the signature
+                    print(f"   ⚠️  Confirmation warning: {e}")
+                    print(f"   Transaction may still be processing...")
+
+                return signature
+
+            except Exception as e:
+                error_msg = str(e)
+                print(f"   ❌ Attempt {attempt + 1} failed: {error_msg[:100]}")
+
+                if attempt < max_retries - 1:
+                    wait_time = (attempt + 1) * 2  # 2s, 4s, 6s
+                    print(f"   Retrying in {wait_time} seconds...")
+                    time.sleep(wait_time)
+                else:
+                    # Last attempt failed
+                    raise Exception(f"Failed to send transaction after {max_retries} attempts: {error_msg}")
 
     def _get_associated_token_address(self, owner: str, mint: str) -> str:
         """

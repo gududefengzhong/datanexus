@@ -67,3 +67,10 @@ test-wallet.json
 # Temporary build files
 *.so
 *.wasm
+
+# Python 相关缓存
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+.Python

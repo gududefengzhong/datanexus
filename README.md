@@ -197,8 +197,8 @@ python scripts/check-usdc-balance.py
 # Create sample datasets
 npx tsx scripts/create-real-datasets.ts
 
-# Test Demo Agent with real x402 payments
-python examples/test-demo-agent.py
+# Run complete x402 flow demo
+python examples/demo_x402_complete_flow.py
 ```
 
 ---
@@ -417,10 +417,9 @@ datanexus/
 ├── examples/                     # Examples & SDKs
 │   ├── python-sdk/               # Python SDK
 │   │   ├── x402_example.py       # x402 client with auto-retry
-│   │   └── datanexus_client.py   # DataNexus client
-│   ├── demo-agents/              # Demo AI agents
-│   │   └── ai_analyst_agent.py   # AI Analyst Agent
-│   └── test-*.py                 # Test scripts
+│   │   ├── datanexus_client.py   # DataNexus client
+│   │   └── demo_test.py          # Complete demo test script
+│   └── demo_x402_complete_flow.py # Complete x402 flow demonstration
 ├── scripts/                      # Utility scripts
 │   ├── create-real-datasets.ts   # Create encrypted datasets
 │   ├── init-reputation.ts        # 🆕 Initialize reputation for existing users
@@ -674,19 +673,30 @@ analysis = client.analyze_dataset(
 )
 ```
 
-### Demo Agent
+### Demo Scripts
 
-Run the AI Analyst Agent:
+**Complete x402 Flow Demo** (Recommended for judges):
 
 ```bash
-python examples/demo-agents/ai_analyst_agent.py
+python examples/demo_x402_complete_flow.py
 ```
 
-This agent will:
-1. Search for crypto market data
-2. Automatically purchase with Solana USDC
-3. Analyze with EigenAI verifiable inference
-4. Generate trading signals and predictions
+This demo demonstrates:
+1. Search for datasets
+2. Attempt download → Receive HTTP 402 Payment Required
+3. Make Solana USDC payment automatically
+4. Retry download with payment token
+5. Verify downloaded data
+6. Analyze with EigenAI verifiable inference
+7. View purchase history
+
+**Full Feature Test**:
+
+```bash
+python examples/python-sdk/demo_test.py
+```
+
+This script tests all DataNexus features end-to-end.
 
 ---
 
