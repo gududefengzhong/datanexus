@@ -83,442 +83,256 @@
             <!-- Slide 1: Title -->
             <section>
                 <h1 class="gradient-text">DataNexus</h1>
-                <h3>Decentralized Data Marketplace for AI Agents</h3>
-                <div style="display: flex; align-items: center; justify-content: center; gap: 15px; margin-top: 20px;">
-                    <p style="margin: 0;">Powered by</p>
-                    <p style="margin: 0;">Solana & x402 Protocol</p>
-                </div>
+                <h3>Autonomous Data Marketplace for AI Agents</h3>
+                <p style="margin-top: 20px; font-size: 0.9em;">Solana × x402 × Irys × EigenAI</p>
                 <p style="margin-top: 30px;">
                     <a href="https://xdatanexus.vercel.app" class="demo-link" target="_blank">
-                        🚀 Live Demo
+                        Live Demo
                     </a>
                 </p>
-                <p style="font-size: 0.8em; margin-top: 30px;">
+                <p style="font-size: 0.75em; margin-top: 30px;">
                     Solana x402 Hackathon 2025<br>
-                    🏆 Best x402 Agent Application | 🌟 Best Trustless Agent | ⚡ Best x402 API Integration
+                    x402 Agent Application | Trustless Agent | x402 API Integration
                 </p>
             </section>
 
-            <!-- Slide 2: The Problem -->
+            <!-- Slide 2: What It Does -->
             <section>
-                <h2>🎯 The Problem</h2>
+                <h2>What It Does</h2>
                 <div style="text-align: left; margin-top: 40px;">
-                    <h3 class="highlight">AI Agents Need Data, But...</h3>
-                    <ul style="font-size: 0.9em; margin-top: 30px;">
-                        <li><strong>No autonomous payment standard</strong> - AI agents can't purchase data without human intervention</li>
-                        <li><strong>Trust issues</strong> - No cryptographic proof of data quality or AI analysis</li>
-                        <li><strong>High costs</strong> - Traditional payment rails charge 2-3% fees + slow settlement</li>
-                        <li><strong>Centralization risks</strong> - Single points of failure and censorship</li>
-                        <li><strong>Market gap</strong> - $100B+ AI data market lacks decentralized infrastructure</li>
+                    <h3 class="highlight">AI agents buy/sell data autonomously</h3>
+                    <ul style="font-size: 0.85em; margin-top: 30px; line-height: 1.6;">
+                        <li>HTTP 402 protocol → agents detect payment requirements</li>
+                        <li>Direct USDC transfers → no intermediaries</li>
+                        <li>On-chain reputation → trustless provider verification</li>
+                        <li>Smart contract escrow → custom data requests</li>
+                        <li>EigenAI integration → verifiable inference</li>
                     </ul>
                 </div>
             </section>
 
-            <!-- Slide 3: The Solution -->
+            <!-- Slide 3: Core Features -->
             <section>
-                <h2>💡 Our Solution: DataNexus</h2>
+                <h2>Core Features</h2>
                 <div class="feature-grid">
                     <div class="feature-box">
-                        <h3>🤖 x402 Protocol</h3>
-                        <p><strong>First production implementation</strong> of HTTP 402 for AI agents</p>
+                        <h3>x402 Protocol</h3>
+                        <p>HTTP 402 + auto-retry + USDC payments</p>
                     </div>
                     <div class="feature-box">
-                        <h3>🏆 Reputation System</h3>
-                        <p><strong>On-chain trust scoring</strong> with 5 verification badges</p>
+                        <h3>Reputation System</h3>
+                        <p>0-100 score + 5 badges + SAS attestation</p>
                     </div>
                     <div class="feature-box">
-                        <h3>🔒 Smart Escrow</h3>
-                        <p><strong>Trustless payments</strong> with dispute resolution</p>
+                        <h3>Smart Escrow</h3>
+                        <p>PDA-based Anchor contract</p>
                     </div>
                     <div class="feature-box">
-                        <h3>✅ Verifiable AI</h3>
-                        <p><strong>Cryptographic proofs</strong> via EigenAI</p>
+                        <h3>EigenAI</h3>
+                        <p>Verifiable inference + 1M token grant</p>
                     </div>
                 </div>
             </section>
 
-            <!-- Slide 4: How It Works -->
+            <!-- Slide 4: x402 Flow -->
             <section>
-                <h2>🔄 How It Works</h2>
-                <div style="text-align: left; font-size: 0.85em; margin-top: 30px;">
-                    <ol style="list-style: decimal; padding-left: 40px;">
-                        <li style="margin-bottom: 20px;">
-                            <strong class="highlight">AI Agent Searches</strong> for datasets via API
-                        </li>
-                        <li style="margin-bottom: 20px;">
-                            <strong class="highlight">Receives HTTP 402</strong> with payment details in headers
-                        </li>
-                        <li style="margin-bottom: 20px;">
-                            <strong class="highlight">Makes Solana Payment</strong> automatically (USDC SPL token)
-                        </li>
-                        <li style="margin-bottom: 20px;">
-                            <strong class="highlight">Retries Request</strong> with payment proof (transaction signature)
-                        </li>
-                        <li style="margin-bottom: 20px;">
-                            <strong class="highlight">Downloads Dataset</strong> with hybrid encryption (AES-256 + RSA)
-                        </li>
-                        <li style="margin-bottom: 20px;">
-                            <strong class="highlight">Verifies with EigenAI</strong> for cryptographic proof of analysis
-                        </li>
-                    </ol>
+                <h2>x402 Flow</h2>
+                <div style="text-align: left; font-size: 0.8em; margin-top: 30px;">
+                    <div style="background: rgba(102, 126, 234, 0.15); padding: 20px; border-radius: 10px;">
+                        <p style="margin-bottom: 15px;"><strong>1.</strong> Agent requests dataset → <span class="highlight">HTTP 402</span> (payment required)</p>
+                        <p style="margin-bottom: 15px;"><strong>2.</strong> Agent pays <span class="highlight">USDC</span> to provider's wallet (400ms, $0.00025)</p>
+                        <p style="margin-bottom: 15px;"><strong>3.</strong> Agent retries with <span class="highlight">tx signature</span></p>
+                        <p style="margin-bottom: 15px;"><strong>4.</strong> Server verifies payment → returns <span class="highlight">encrypted data</span></p>
+                        <p style="margin-bottom: 15px;"><strong>5.</strong> Agent decrypts locally (AES-256)</p>
+                        <p><strong>6.</strong> Optional: EigenAI analysis with <span class="highlight">cryptographic proof</span></p>
+                    </div>
+                    <div style="margin-top: 20px; text-align: center;">
+                        <p style="font-size: 0.9em;">Zero human intervention. Fully autonomous.</p>
+                    </div>
                 </div>
             </section>
 
-            <!-- Slide 5: Technical Architecture Diagram -->
+            <!-- Slide 5: Architecture -->
             <section>
-                <h2>🏗️ System Architecture</h2>
-                <div style="margin-top: 10px;">
-                    <svg viewBox="0 0 900 450" style="max-width: 100%; height: auto;">
-                        <!-- AI Agent Layer -->
-                        <text x="450" y="25" text-anchor="middle" fill="#667eea" font-size="16" font-weight="bold">AI Agent Layer</text>
-                        <rect x="350" y="35" width="200" height="40" fill="#667eea" rx="8"/>
-                        <text x="450" y="60" text-anchor="middle" fill="white" font-size="12">Python SDK / REST API</text>
-
-                        <!-- Arrow down -->
-                        <path d="M 450 75 L 450 105" stroke="#10b981" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
-                        <text x="475" y="95" fill="#10b981" font-size="10">HTTP 402</text>
-
-                        <!-- DataNexus Platform -->
-                        <text x="450" y="125" text-anchor="middle" fill="#667eea" font-size="16" font-weight="bold">DataNexus Platform</text>
-                        <rect x="50" y="135" width="160" height="60" fill="#764ba2" rx="6"/>
-                        <text x="130" y="155" text-anchor="middle" fill="white" font-size="11" font-weight="bold">Frontend</text>
-                        <text x="130" y="170" text-anchor="middle" fill="white" font-size="9">Next.js 16</text>
-                        <text x="130" y="183" text-anchor="middle" fill="white" font-size="9">React 19</text>
-
-                        <rect x="230" y="135" width="160" height="60" fill="#764ba2" rx="6"/>
-                        <text x="310" y="155" text-anchor="middle" fill="white" font-size="11" font-weight="bold">Backend API</text>
-                        <text x="310" y="170" text-anchor="middle" fill="white" font-size="9">Next.js API</text>
-                        <text x="310" y="183" text-anchor="middle" fill="white" font-size="9">Prisma + PG</text>
-
-                        <rect x="410" y="135" width="160" height="60" fill="#764ba2" rx="6"/>
-                        <text x="490" y="155" text-anchor="middle" fill="white" font-size="11" font-weight="bold">x402 Protocol</text>
-                        <text x="490" y="170" text-anchor="middle" fill="white" font-size="9">Payment</text>
-                        <text x="490" y="183" text-anchor="middle" fill="white" font-size="9">Auto-retry</text>
-
-                        <rect x="590" y="135" width="160" height="60" fill="#764ba2" rx="6"/>
-                        <text x="670" y="155" text-anchor="middle" fill="white" font-size="11" font-weight="bold">Reputation</text>
-                        <text x="670" y="170" text-anchor="middle" fill="white" font-size="9">Trust Score</text>
-                        <text x="670" y="183" text-anchor="middle" fill="white" font-size="9">5 Badges</text>
-
-                        <!-- Arrow down to blockchain -->
-                        <path d="M 310 195 L 310 225" stroke="#10b981" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
-                        <path d="M 490 195 L 490 225" stroke="#10b981" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
-
-                        <!-- Blockchain Layer -->
-                        <text x="450" y="245" text-anchor="middle" fill="#667eea" font-size="16" font-weight="bold">Blockchain Layer</text>
-                        <rect x="200" y="255" width="180" height="60" fill="#14f195" rx="6"/>
-                        <text x="290" y="275" text-anchor="middle" fill="#000" font-size="12" font-weight="bold">Solana Network</text>
-                        <text x="290" y="290" text-anchor="middle" fill="#000" font-size="9">SPL Token (USDC)</text>
-                        <text x="290" y="303" text-anchor="middle" fill="#000" font-size="9">400ms finality</text>
-
-                        <rect x="400" y="255" width="200" height="60" fill="#667eea" rx="6"/>
-                        <text x="500" y="275" text-anchor="middle" fill="white" font-size="12" font-weight="bold">Smart Contract</text>
-                        <text x="500" y="290" text-anchor="middle" fill="white" font-size="8">gxDTeSCzk9...K9698</text>
-                        <text x="500" y="303" text-anchor="middle" fill="white" font-size="9">Anchor Framework</text>
-
-                        <!-- Arrow down to storage -->
-                        <path d="M 290 315 L 290 345" stroke="#10b981" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
-                        <path d="M 500 315 L 500 345" stroke="#10b981" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
-
-                        <!-- Storage Layer -->
-                        <text x="450" y="365" text-anchor="middle" fill="#667eea" font-size="16" font-weight="bold">Storage Layer</text>
-                        <rect x="150" y="375" width="150" height="40" fill="#764ba2" rx="6"/>
-                        <text x="225" y="400" text-anchor="middle" fill="white" font-size="11">Irys/Arweave</text>
-
-                        <rect x="320" y="375" width="150" height="40" fill="#764ba2" rx="6"/>
-                        <text x="395" y="400" text-anchor="middle" fill="white" font-size="11">Encryption</text>
-
-                        <rect x="490" y="375" width="150" height="40" fill="#764ba2" rx="6"/>
-                        <text x="565" y="400" text-anchor="middle" fill="white" font-size="11">IPFS</text>
-
-                        <!-- Arrow marker -->
-                        <defs>
-                            <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-                                <polygon points="0 0, 10 3, 0 6" fill="#10b981"/>
-                            </marker>
-                        </defs>
-                    </svg>
+                <h2>Architecture</h2>
+                <div style="margin-top: 30px; text-align: left; font-size: 0.75em;">
+                    <div style="background: rgba(102, 126, 234, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                        <p><strong>AI Agent</strong> (Python SDK) → HTTP 402 → <strong>Next.js API</strong> (x402 middleware)</p>
+                    </div>
+                    <div style="background: rgba(102, 126, 234, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                        <p><strong>Business Logic</strong>: Dataset | Payment | Reputation | EigenAI</p>
+                    </div>
+                    <div style="background: rgba(102, 126, 234, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                        <p><strong>Data Layer</strong>: PostgreSQL (cache) | Solana (proof) | Irys (storage)</p>
+                    </div>
+                    <div style="background: rgba(102, 126, 234, 0.1); padding: 15px; border-radius: 8px;">
+                        <p><strong>External</strong>: Solana Devnet | Irys | EigenAI | SAS | Helius RPC</p>
+                    </div>
+                    <div style="margin-top: 20px; padding: 15px; background: rgba(16, 185, 129, 0.1); border-radius: 8px;">
+                        <p><strong>Hybrid Design</strong>: PostgreSQL (fast) + Irys (permanent) + Solana (immutable)</p>
+                    </div>
                 </div>
             </section>
 
-            <!-- Slide 6: Complete Product Features -->
+            <!-- Slide 6: Reputation System -->
             <section>
-                <h2>🎨 Complete Product Features</h2>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 20px; text-align: left; font-size: 0.75em;">
+                <h2>Reputation System</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 25px; text-align: left; font-size: 0.7em;">
                     <div>
-                        <h3 class="highlight" style="font-size: 1.1em;">🛒 Data Marketplace</h3>
-                        <ul style="margin-top: 10px;">
-                            <li>Browse & search datasets</li>
-                            <li>Category filtering (DeFi, NFT, etc.)</li>
-                            <li>Price comparison</li>
-                            <li>Quality ratings & reviews</li>
-                            <li>Preview before purchase</li>
-                        </ul>
-
-                        <h3 class="highlight" style="font-size: 1.1em; margin-top: 20px;">🏆 Reputation System</h3>
-                        <ul style="margin-top: 10px;">
-                            <li>0-100 trust score calculation</li>
-                            <li>5 verification badges</li>
-                            <li>On-chain proof (Irys + SAS)</li>
-                            <li>Anti-fraud protection</li>
-                            <li>Rating & review system</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h3 class="highlight" style="font-size: 1.1em;">📝 Data Request System</h3>
-                        <ul style="margin-top: 10px;">
-                            <li>Request custom datasets</li>
-                            <li>Specify requirements & budget</li>
-                            <li>Providers bid on requests</li>
-                            <li>Escrow-protected payments</li>
-                            <li>Quality verification</li>
-                        </ul>
-
-                        <h3 class="highlight" style="font-size: 1.1em; margin-top: 20px;">🤖 AI Agent Integration</h3>
-                        <ul style="margin-top: 10px;">
-                            <li>x402 autonomous payments</li>
-                            <li>EigenAI verifiable inference (1M tokens)</li>
-                            <li>Python SDK for easy integration</li>
-                            <li>RESTful API & dashboard</li>
-                            <li>API key management</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Slide 7: Our Competitive Advantages -->
-            <section>
-                <h2>🏆 Why DataNexus Stands Out</h2>
-                <div style="text-align: left; margin-top: 15px; font-size: 0.68em;">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                        <div>
-                            <h3 class="highlight" style="font-size: 1.05em;">✅ Complete Solution</h3>
-                            <p style="margin-top: 8px; font-size: 0.85em;">Not just a protocol - a full marketplace with:</p>
-                            <ul style="margin-top: 5px; font-size: 0.82em;">
-                                <li>User-friendly web interface</li>
-                                <li>Data request system</li>
-                                <li>Dashboard & analytics</li>
-                                <li>API & SDK for developers</li>
-                            </ul>
-
-                            <h3 class="highlight" style="font-size: 1.05em; margin-top: 12px;">✅ Production Ready</h3>
-                            <p style="margin-top: 8px; font-size: 0.85em;">Live on Solana Devnet with:</p>
-                            <ul style="margin-top: 5px; font-size: 0.82em;">
-                                <li>Deployed smart contracts</li>
-                                <li>Real transactions & payments</li>
-                                <li>Working Python SDK</li>
-                                <li>Comprehensive documentation</li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h3 class="highlight" style="font-size: 1.05em;">✅ Unique Features</h3>
-                            <p style="margin-top: 8px; font-size: 0.85em;">What others don't have:</p>
-                            <ul style="margin-top: 5px; font-size: 0.82em;">
-                                <li><strong>EigenAI Integration</strong> - Verifiable AI (1M tokens grant)</li>
-                                <li><strong>Data Request System</strong> - Custom datasets</li>
-                                <li><strong>Hybrid Encryption</strong> - AES-256 + RSA</li>
-                                <li><strong>Dispute Resolution</strong> - On-chain arbitration</li>
-                            </ul>
-
-                            <h3 class="highlight" style="font-size: 1.05em; margin-top: 12px;">✅ Developer Experience</h3>
-                            <p style="margin-top: 8px; font-size: 0.85em;">Built for AI developers:</p>
-                            <ul style="margin-top: 5px; font-size: 0.82em;">
-                                <li>Simple Python SDK (3 lines of code)</li>
-                                <li>RESTful API with OpenAPI docs</li>
-                                <li>6 detailed guides & tutorials</li>
-                                <li>Working examples & demos</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Slide 8: Provider Reputation System -->
-            <section>
-                <h2 style="font-size: 1.7em;">🏆 Provider Reputation System</h2>
-                <h3 class="success" style="margin-top: 12px; font-size: 0.8em;">Building Trust in the Agent Economy</h3>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 18px; text-align: left; font-size: 0.6em;">
-                    <div>
-                        <h3 class="highlight" style="font-size: 1.0em;">📊 Score Calculation (0-100)</h3>
-                        <ul style="margin-top: 6px; font-size: 0.92em; line-height: 1.4;">
-                            <li><strong>Base:</strong> 50 | <strong>Rating:</strong> +20 | <strong>Sales:</strong> +20</li>
-                            <li><strong>Dispute:</strong> -30 | <strong>Refund:</strong> -20</li>
-                        </ul>
-                        <div style="background: rgba(102, 126, 234, 0.2); padding: 6px; border-radius: 6px; margin-top: 6px;">
-                            <p style="font-size: 1.0em;"><strong>Example Provider:</strong></p>
-                            <p style="margin-top: 5px; font-size: 0.92em; line-height: 1.5;">⭐ 4.8/5.0 (25 reviews) | 📦 150 sales<br>⚖️ 2% disputes | 💰 1% refunds</p>
-                            <p style="margin-top: 6px; color: #10b981; font-size: 0.85em;"><strong>Score: 85/100</strong> ✅</p>
+                        <h3 class="highlight">Score Calculation (0-100)</h3>
+                        <div style="background: rgba(102, 126, 234, 0.15); padding: 12px; border-radius: 8px; margin-top: 10px;">
+                            <p style="margin-bottom: 8px;">Base: 50</p>
+                            <p style="margin-bottom: 8px;">+ Rating: (avg - 3) × 10 (max +20)</p>
+                            <p style="margin-bottom: 8px;">+ Sales: min(sales/10, 20)</p>
+                            <p style="margin-bottom: 8px;">- Disputes: count × 30</p>
+                            <p>- Refunds: count × 20</p>
                         </div>
 
-                        <h3 class="highlight" style="font-size: 1.0em; margin-top: 12px;">🎖️ 5 Badge Types</h3>
-                        <ul style="margin-top: 6px; font-size: 0.82em; line-height: 1.2;">
-                            <li>✅ Verified (Score ≥80) | 🏆 Top Seller (Sales ≥100)</li>
-                            <li>🌟 Trusted (Rating ≥4.5) | 💎 High Quality (Dispute &lt;5%)</li>
-                            <li>🔒 Reliable (Refund &lt;3%)</li>
+                        <h3 class="highlight" style="margin-top: 15px;">5 Badges</h3>
+                        <ul style="margin-top: 8px; font-size: 0.9em;">
+                            <li>Verified (email + wallet)</li>
+                            <li>Top Seller (100+ sales)</li>
+                            <li>Trusted (score ≥90)</li>
+                            <li>High Quality (rating ≥4.5)</li>
+                            <li>Reliable (refund <5%)</li>
                         </ul>
                     </div>
                     <div>
-                        <h3 class="highlight" style="font-size: 1.0em;">🔗 On-Chain Verification</h3>
-                        <ul style="margin-top: 6px; font-size: 0.82em; line-height: 1.2;">
-                            <li><strong>Irys:</strong> Permanent storage on Arweave</li>
-                            <li><strong>SAS:</strong> Solana Attestation Service</li>
-                            <li><strong>Immutable:</strong> Cryptographic proof</li>
-                            <li><strong>Auto-Update:</strong> 4 trigger events (sale, rating, dispute, refund)</li>
+                        <h3 class="highlight">On-Chain Proof</h3>
+                        <ul style="margin-top: 10px; font-size: 0.9em;">
+                            <li>Irys: Permanent storage (detailed data)</li>
+                            <li>Solana: Immutable proof (data hash)</li>
+                            <li>SAS: Attestation (score ≥80)</li>
+                            <li>PostgreSQL: Fast queries (<100ms)</li>
                         </ul>
 
-                        <h3 class="highlight" style="font-size: 1.0em; margin-top: 12px;">🛡️ Anti-Fraud Protection</h3>
-                        <ul style="margin-top: 6px; font-size: 0.82em; line-height: 1.2;">
-                            <li>6-layer validation system</li>
-                            <li>No rating after refund or during dispute</li>
-                            <li>One rating per order maximum</li>
+                        <h3 class="highlight" style="margin-top: 15px;">Anti-Fraud</h3>
+                        <ul style="margin-top: 8px; font-size: 0.9em;">
+                            <li>6-layer validation</li>
+                            <li>No rating after refund</li>
+                            <li>One rating per order</li>
                             <li>Order verification required</li>
                         </ul>
-
-                        <h3 class="highlight" style="font-size: 1.0em; margin-top: 12px;">⚡ Why It Matters</h3>
-                        <ul style="margin-top: 4px; font-size: 0.82em; line-height: 1.2;">
-                            <li><strong>Trustless:</strong> No central authority needed</li>
-                            <li><strong>Transparent:</strong> All data on-chain</li>
-                            <li><strong>Autonomous:</strong> AI agents can verify providers</li>
-                        </ul>
                     </div>
                 </div>
             </section>
 
-            <!-- Slide 9: x402 Protocol Implementation -->
+            <!-- Slide 7: Developer Tools -->
             <section>
-                <h2 style="font-size: 1.5em;">⚡ x402 Protocol - Production Ready</h2>
-                <h3 class="success" style="margin-top: 12px; font-size: 0.75em;">Complete HTTP 402 for AI Agents</h3>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 18px; text-align: left; font-size: 0.6em;">
-                    <div>
-                        <h3 class="highlight" style="font-size: 1.0em;">🔄 5-Step Autonomous Flow</h3>
-                        <div style="background: rgba(102, 126, 234, 0.15); padding: 2px; border-radius: 6px; ">
-                            <p style="margin-bottom: 1px; font-size: 0.82em;"><strong>1️⃣ Request</strong> → GET /api/datasets/123</p>
-                            <p style="margin-bottom: 1px; font-size: 0.82em;"><strong>2️⃣ HTTP 402</strong> → Payment headers returned</p>
-                            <p style="margin-bottom: 1px; font-size: 0.82em;"><strong>3️⃣ Pay</strong> → USDC transfer (400ms, $0.00025)</p>
-                            <p style="margin-bottom: 1px; font-size: 0.82em;"><strong>4️⃣ Retry</strong> → x-payment-token: {signature}</p>
-                            <p style="font-size: 0.82em;"><strong>5️⃣ Download</strong> → Encrypted data delivered</p>
+                <h2>Developer Tools</h2>
+                <div style="margin-top: 30px; text-align: left; font-size: 0.75em;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div>
+                            <h3 class="highlight">Python SDK</h3>
+                            <div style="background: rgba(0,0,0,0.5); padding: 12px; border-radius: 8px; margin-top: 10px;">
+                                <pre style="margin: 0; font-size: 0.85em;"><code>client = SimpleX402Client(
+    api_key, solana_key
+)
+data = client.download_dataset(id)
+# Auto-pays via x402
+
+analysis = client.analyze_dataset(id)
+# EigenAI with proof</code></pre>
+                            </div>
                         </div>
-
-                        <h3 class="highlight" style="font-size: 1.0em; margin-top: 12px;">🎯 Key Features</h3>
-                        <ul style="margin-top: 6px; font-size: 0.92em; line-height: 1.4;">
-                            <li><strong>Zero Human Intervention</strong> - Fully autonomous</li>
-                            <li><strong>Instant Settlement</strong> - 400ms finality</li>
-                            <li><strong>Micro-payments</strong> - $0.00025 per tx</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h3 class="highlight" style="font-size: 1.0em; margin-top: 12px;">🔧 Developer Tools</h3>
-                        <ul style="margin-top: 6px; font-size: 0.92em; line-height: 1.4;">
-                            <li><strong>Python SDK:</strong> x402 + EigenAI client</li>
-                            <li><strong>REST API:</strong> OpenAPI docs</li>
-                            <li><strong>Examples:</strong> Complete demo scripts</li>
-                            <li><strong>Guides:</strong> Step-by-step tutorials</li>
-                        </ul>
-
-                        <h3 class="highlight" style="font-size: 1.0em; margin-top: 12px;">⚡ Why x402?</h3>
-                        <ul style="margin-top: 6px; font-size: 0.92em; line-height: 1.4;">
-                            <li><strong>Standard Protocol:</strong> HTTP 402 Payment Required</li>
-                            <li><strong>Agent-Native:</strong> No human in the loop</li>
-                            <li><strong>Composable:</strong> Works with any HTTP client</li>
-                        </ul>
+                        <div>
+                            <h3 class="highlight">Features</h3>
+                            <ul style="margin-top: 10px; font-size: 0.9em;">
+                                <li>3-line integration</li>
+                                <li>Auto-retry on HTTP 402</li>
+                                <li>USDC payment handling</li>
+                                <li>EigenAI integration</li>
+                                <li>REST API (OpenAPI docs)</li>
+                                <li>Working examples</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Slide 10: Product Interface & Live Demo -->
+            <!-- Slide 8: Live Demo -->
             <section>
-                <h2 style="font-size: 1.8em;">🖥️ Live Product Demo</h2>
-                <h3 class="success" style="margin-top: 15px; font-size: 0.85em;">✅ Production Ready on Solana Devnet</h3>
-                <div style="margin-top: 20px; font-size: 0.65em;">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; text-align: left;">
-                        <div style="background: rgba(139, 92, 246, 0.15); padding: 12px; border-radius: 10px; border: 2px solid rgba(139, 92, 246, 0.3);">
-                            <h3 class="highlight" style="font-size: 1.05em;">🛒 Marketplace</h3>
-                            <ul style="margin-top: 8px; font-size: 0.95em;">
-                                <li>Search & filter datasets</li>
-                                <li>Category tags (DeFi, NFT, Gaming)</li>
-                                <li>Provider reputation badges</li>
-                                <li>One-click purchase</li>
-                                <li><strong>Buy once, download forever</strong> 🔄</li>
-                            </ul>
-                        </div>
-
-                        <div style="background: rgba(236, 72, 153, 0.15); padding: 12px; border-radius: 10px; border: 2px solid rgba(236, 72, 153, 0.3);">
-                            <h3 class="highlight" style="font-size: 1.05em;">📝 Data Requests</h3>
-                            <ul style="margin-top: 8px; font-size: 0.95em;">
-                                <li>Post custom data needs</li>
-                                <li>Set budget & requirements</li>
-                                <li>Receive provider bids</li>
-                                <li>Escrow-protected delivery</li>
-                                <li>Quality verification</li>
-                            </ul>
-                        </div>
-
-                        <div style="background: rgba(59, 130, 246, 0.15); padding: 12px; border-radius: 10px; border: 2px solid rgba(59, 130, 246, 0.3);">
-                            <h3 class="highlight" style="font-size: 1.05em;">📊 Dashboard</h3>
-                            <ul style="margin-top: 8px; font-size: 0.95em;">
-                                <li>Purchase history with ratings</li>
-                                <li>API key management</li>
-                                <li>Revenue tracking (sellers)</li>
-                                <li>Usage analytics</li>
-                                <li>Transaction logs</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div style="margin-top: 20px; text-align: center;">
-                        <div style="background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; margin-top: 15px; text-align: left;">
-                            <h4 style="color: #667eea; margin-bottom: 8px; font-size: 1.05em;">For Judges - Test in 2 Minutes:</h4>
-                            <pre style="font-size: 0.65em; margin: 0;"><code>git clone https://github.com/gududefengzhong/datanexus.git
+                <h2>Live Demo</h2>
+                <div style="margin-top: 30px; text-align: center;">
+                    <p style="font-size: 0.9em; margin-bottom: 20px;">
+                        <a href="https://xdatanexus.vercel.app" class="demo-link" target="_blank">
+                            xdatanexus.vercel.app
+                        </a>
+                    </p>
+                    <div style="background: rgba(0,0,0,0.5); padding: 20px; border-radius: 8px; text-align: left; font-size: 0.7em;">
+                        <h4 style="color: #667eea; margin-bottom: 12px;">Test in 2 Minutes:</h4>
+                        <pre style="margin: 0; font-size: 0.9em;"><code>git clone https://github.com/gududefengzhong/datanexus.git
 cd datanexus/examples
 pip install -r requirements.txt
 python demo_x402_complete_flow.py
 
-# Watch real Solana transactions on Devnet!</code></pre>
+# Watch real Solana transactions on Devnet</code></pre>
+                    </div>
+                    <div style="margin-top: 25px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; text-align: left; font-size: 0.7em;">
+                        <div style="background: rgba(102, 126, 234, 0.15); padding: 12px; border-radius: 8px;">
+                            <h4 class="highlight">Marketplace</h4>
+                            <ul style="margin-top: 8px; font-size: 0.9em;">
+                                <li>Search datasets</li>
+                                <li>Reputation badges</li>
+                                <li>Buy once, download forever</li>
+                            </ul>
+                        </div>
+                        <div style="background: rgba(236, 72, 153, 0.15); padding: 12px; border-radius: 8px;">
+                            <h4 class="highlight">Data Requests</h4>
+                            <ul style="margin-top: 8px; font-size: 0.9em;">
+                                <li>Custom data needs</li>
+                                <li>Provider bids</li>
+                                <li>Escrow protection</li>
+                            </ul>
+                        </div>
+                        <div style="background: rgba(59, 130, 246, 0.15); padding: 12px; border-radius: 8px;">
+                            <h4 class="highlight">Dashboard</h4>
+                            <ul style="margin-top: 8px; font-size: 0.9em;">
+                                <li>Purchase history</li>
+                                <li>API keys</li>
+                                <li>Analytics</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Slide 11: Hackathon Tracks Alignment -->
+            <!-- Slide 9: Hackathon Tracks -->
             <section>
-                <h2 style="font-size: 1.7em;">🎯 Hackathon Tracks - Perfect Match</h2>
-                <div style="display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 18px; text-align: left; font-size: 0.6em;">
-                    <div style="background: rgba(255, 215, 0, 0.15); padding: 12px; border-radius: 8px; border: 3px solid rgba(255, 215, 0, 0.5);">
-                        <h3 style="color: #ffd700; font-size: 1.15em;">🏆 Best x402 Agent Application ($20,000)</h3>
-                        <ul style="margin-top: 6px; font-size: 0.92em; line-height: 1.4;">
-                            <li><strong>Complete Marketplace:</strong> AI agents buy/sell data autonomously</li>
-                            <li><strong>Production x402:</strong> Full HTTP 402 + auto-retry + Python SDK (3 lines)</li>
-                            <li><strong>Live on Devnet:</strong> Real USDC transactions | <strong>$100B+ market</strong></li>
+                <h2>Hackathon Tracks</h2>
+                <div style="margin-top: 30px; text-align: left; font-size: 0.7em;">
+                    <div style="background: rgba(255, 215, 0, 0.15); padding: 15px; border-radius: 8px; border: 2px solid rgba(255, 215, 0, 0.5); margin-bottom: 15px;">
+                        <h3 style="color: #ffd700; font-size: 1.1em;">x402 Agent Application</h3>
+                        <ul style="margin-top: 8px; font-size: 0.95em;">
+                            <li>AI agents buy/sell data autonomously</li>
+                            <li>HTTP 402 + auto-retry + Python SDK</li>
+                            <li>Live on Devnet with real USDC</li>
                         </ul>
                     </div>
-
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                        <div style="background: rgba(102, 126, 234, 0.15); padding: 12px; border-radius: 8px; border: 2px solid rgba(102, 126, 234, 0.5);">
-                            <h3 class="highlight" style="font-size: 1.05em;">🌟 Best Trustless Agent ($10,000)</h3>
-                            <ul style="margin-top: 6px; font-size: 0.92em; line-height: 1.4;">
-                                <li><strong>Reputation System:</strong> 0-100 score + 5 badges</li>
-                                <li><strong>On-Chain:</strong> Irys + SAS attestation</li>
-                                <li><strong>Anti-Fraud:</strong> 6-layer validation</li>
-                                <li><strong>Immutable:</strong> Cryptographic proof</li>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div style="background: rgba(102, 126, 234, 0.15); padding: 15px; border-radius: 8px; border: 2px solid rgba(102, 126, 234, 0.5);">
+                            <h3 class="highlight" style="font-size: 1.05em;">Trustless Agent</h3>
+                            <ul style="margin-top: 8px; font-size: 0.95em;">
+                                <li>0-100 score + 5 badges</li>
+                                <li>Irys + SAS attestation</li>
+                                <li>6-layer anti-fraud</li>
                             </ul>
                         </div>
-
-                        <div style="background: rgba(139, 92, 246, 0.15); padding: 12px; border-radius: 8px; border: 2px solid rgba(139, 92, 246, 0.5);">
-                            <h3 class="highlight" style="font-size: 1.05em;">⚡ Best x402 API Integration ($10,000)</h3>
-                            <ul style="margin-top: 6px; font-size: 0.92em; line-height: 1.4;">
-                                <li><strong>Complete API:</strong> OpenAPI docs</li>
-                                <li><strong>Agent-to-Agent:</strong> Autonomous USDC</li>
-                                <li><strong>Micro-payments:</strong> $0.00025/tx</li>
-                                <li><strong>Dev Tools:</strong> SDK + 6 examples</li>
+                        <div style="background: rgba(139, 92, 246, 0.15); padding: 15px; border-radius: 8px; border: 2px solid rgba(139, 92, 246, 0.5);">
+                            <h3 class="highlight" style="font-size: 1.05em;">x402 API Integration</h3>
+                            <ul style="margin-top: 8px; font-size: 0.95em;">
+                                <li>OpenAPI docs</li>
+                                <li>Autonomous USDC payments</li>
+                                <li>SDK + examples</li>
                             </ul>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Slide 12: Impact & Metrics -->
+            <!-- Slide 10: Impact -->
             <section>
-                <h2>📊 Why This Matters</h2>
+                <h2>Impact</h2>
                 <div class="stats">
                     <div class="stat-item">
                         <div class="stat-number">10,000x</div>
@@ -526,7 +340,7 @@ python demo_x402_complete_flow.py
                     </div>
                     <div class="stat-item">
                         <div class="stat-number">400ms</div>
-                        <p>vs 12 sec (Ethereum)</p>
+                        <p>vs 12s (Ethereum)</p>
                     </div>
                     <div class="stat-item">
                         <div class="stat-number">$100B+</div>
@@ -534,107 +348,71 @@ python demo_x402_complete_flow.py
                     </div>
                 </div>
                 <div style="margin-top: 50px; text-align: left;">
-                    <h3 class="highlight">Real-World Impact:</h3>
+                    <h3 class="highlight">Use Cases:</h3>
                     <ul style="font-size: 0.85em;">
-                        <li><strong>AI Trading Bots</strong> - Purchase real-time market data autonomously</li>
-                        <li><strong>Research Agents</strong> - Access verified datasets with cryptographic proofs</li>
-                        <li><strong>Data DAOs</strong> - Monetize community-owned data without intermediaries</li>
-                        <li><strong>Enterprise AI</strong> - Compliant, auditable data procurement</li>
+                        <li>AI Trading Bots - Autonomous market data purchase</li>
+                        <li>Research Agents - Verified datasets with proofs</li>
+                        <li>Data DAOs - Monetize community data</li>
+                        <li>Enterprise AI - Auditable procurement</li>
                     </ul>
                 </div>
             </section>
 
-            <!-- Slide 13: What We Built -->
+            <!-- Slide 11: What We Built -->
             <section>
-                <h2 style="font-size: 1.7em;">✅ What We Built - Production Ready</h2>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 18px; text-align: left; font-size: 0.6em;">
+                <h2>What We Built</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px; text-align: left; font-size: 0.7em;">
                     <div>
-                        <h3 class="highlight" style="font-size: 1.0em;">🎯 Core Features</h3>
-                        <ul style="margin-top: 6px; font-size: 0.92em; line-height: 1.4;">
-                            <li><strong>x402 Protocol:</strong> Full HTTP 402 + auto-retry</li>
-                            <li><strong>Reputation:</strong> 0-100 score + 5 badges + on-chain</li>
-                            <li><strong>Smart Escrow:</strong> Deployed on Devnet</li>
-                            <li><strong>Python SDK:</strong> x402 + EigenAI (1M tokens)</li>
-                            <li><strong>Web UI:</strong> Marketplace + dashboard</li>
-                            <li><strong>Data Requests:</strong> Custom bidding system</li>
-                            <li><strong>Encryption:</strong> AES-256 + RSA hybrid</li>
-                        </ul>
-
-                        <h3 class="highlight" style="font-size: 1.0em; margin-top: 12px;">📊 Technical Metrics</h3>
-                        <ul style="margin-top: 6px; font-size: 0.92em; line-height: 1.4;">
-                            <li><strong>Cost:</strong> $0.00025/tx | <strong>Finality:</strong> 400ms</li>
-                            <li><strong>Token:</strong> USDC SPL | <strong>Storage:</strong> Irys/Arweave</li>
-                            <li><strong>Network:</strong> Solana Devnet (Mainnet Q1 2026)</li>
+                        <h3 class="highlight">Features</h3>
+                        <ul style="margin-top: 10px; font-size: 0.95em; line-height: 1.5;">
+                            <li>x402 Protocol (HTTP 402 + auto-retry)</li>
+                            <li>Reputation (0-100 score + 5 badges)</li>
+                            <li>Smart Escrow (Anchor PDA)</li>
+                            <li>Python SDK (x402 + EigenAI)</li>
+                            <li>Web UI (marketplace + dashboard)</li>
+                            <li>Data Requests (bidding system)</li>
+                            <li>Encryption (AES-256 + RSA)</li>
                         </ul>
                     </div>
                     <div>
-                        <h3 class="highlight" style="font-size: 1.0em;">📚 Documentation</h3>
-                        <ul style="margin-top: 6px; font-size: 0.92em; line-height: 1.4;">
-                            <li><strong>6 Guides:</strong> Buyer, Seller, API, SDK, Security, Architecture</li>
-                            <li><strong>OpenAPI:</strong> Complete REST API reference</li>
-                            <li><strong>6 Examples:</strong> Working Python demos</li>
-                        </ul>
-
-                        <h3 class="highlight" style="font-size: 1.0em; margin-top: 12px;">🚀 Roadmap</h3>
-                        <div style="background: rgba(102, 126, 234, 0.15); padding: 10px; border-radius: 6px; margin-top: 6px;">
-                            <p style="margin-bottom: 5px; font-size: 0.92em;"><strong>Q1 2026:</strong> Mainnet | Dispute UI | Multi-chain</p>
-                            <p style="font-size: 0.92em;"><strong>Q2-Q3 2026:</strong> DAO | Staking | Partnerships</p>
-                        </div>
-
-                        <h3 class="highlight" style="font-size: 1.0em; margin-top: 12px;">⚡ Why Production Ready?</h3>
-                        <ul style="margin-top: 6px; font-size: 0.92em; line-height: 1.4;">
-                            <li><strong>Live Demo:</strong> xdatanexus.vercel.app</li>
-                            <li><strong>Real Transactions:</strong> On Solana Devnet</li>
-                            <li><strong>Complete Docs:</strong> 6 guides + API reference</li>
-                            <li><strong>Working SDK:</strong> pip install & use in 3 lines</li>
+                        <h3 class="highlight">Metrics</h3>
+                        <ul style="margin-top: 10px; font-size: 0.95em; line-height: 1.5;">
+                            <li>Cost: $0.00025/tx</li>
+                            <li>Finality: 400ms</li>
+                            <li>Token: USDC SPL</li>
+                            <li>Storage: Irys/Arweave</li>
+                            <li>Network: Solana Devnet</li>
+                            <li>EigenAI: 1M token grant</li>
                         </ul>
                     </div>
                 </div>
             </section>
 
-            <!-- Slide 14: Team & Contact -->
+            <!-- Slide 12: Thank You -->
             <section>
-                <h2 style="font-size: 1.7em;">👥 Team & Contact</h2>
-                <div style="margin-top: 25px;">
-                    <h3 class="gradient-text" style="font-size: 1.2em;">DataNexus Team</h3>
-                    <p style="margin-top: 12px; font-size: 0.8em;">Building the future of AI-powered data marketplaces</p>
-                    <div style="margin-top: 25px; font-size: 0.75em; line-height: 1.8;">
-                        <p>🌐 <strong>Live Demo:</strong> <a href="https://xdatanexus.vercel.app">xdatanexus.vercel.app</a></p>
-                        <p>💻 <strong>GitHub:</strong> <a href="https://github.com/gududefengzhong/datanexus">github.com/gududefengzhong/datanexus</a></p>
-                        <p>📧 <strong>Email:</strong> greennft.eth@gmail.com</p>
-                        <p>🐦 <strong>X/Twitter:</strong> <a href="https://x.com/rochestor_mu">@rochestor_mu</a></p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Slide 15: Thank You -->
-            <section>
-                <h1 class="gradient-text" style="font-size: 2.2em;">Thank You! 🙏</h1>
-                <h3 style="font-size: 1.0em; margin-top: 15px;">DataNexus - Enabling Autonomous AI Agents on Solana</h3>
-                <div style="margin-top: 35px;">
+                <h1 class="gradient-text">Thank You</h1>
+                <h3 style="margin-top: 20px;">Autonomous Data Marketplace for AI Agents</h3>
+                <div style="margin-top: 40px;">
                     <p>
-                        <a href="https://xdatanexus.vercel.app" class="demo-link" target="_blank" style="font-size: 0.85em;">
-                            🚀 Try Live Demo
+                        <a href="https://xdatanexus.vercel.app" class="demo-link" target="_blank">
+                            Live Demo
                         </a>
-                        <a href="https://github.com/gududefengzhong/datanexus" class="demo-link" target="_blank" style="font-size: 0.85em;">
-                            💻 View Source Code
+                        <a href="https://github.com/gududefengzhong/datanexus" class="demo-link" target="_blank">
+                            Source Code
                         </a>
                     </p>
-                    <div style="margin-top: 35px; font-size: 0.75em;">
-                        <p style="color: #667eea; font-weight: bold; font-size: 1.05em;">Solana x402 Hackathon 2025</p>
-                        <p style="margin-top: 12px; font-size: 0.95em;">
-                            🏆 Best x402 Agent Application<br>
-                            🌟 Best Trustless Agent<br>
-                            ⚡ Best x402 API Integration
-                        </p>
-                        <p style="margin-top: 15px; color: #10b981; font-size: 0.95em;">
-                            ✅ Production Ready | ✅ Open Source | ✅ Fully Functional
+                    <div style="margin-top: 40px; font-size: 0.75em; line-height: 1.8;">
+                        <p><strong>Demo:</strong> xdatanexus.vercel.app</p>
+                        <p><strong>GitHub:</strong> github.com/gududefengzhong/datanexus</p>
+                        <p><strong>Email:</strong> greennft.eth@gmail.com</p>
+                        <p><strong>X:</strong> @rochestor_mu</p>
+                    </div>
+                    <div style="margin-top: 35px; font-size: 0.7em;">
+                        <p style="color: #667eea;">Solana x402 Hackathon 2025</p>
+                        <p style="margin-top: 10px;">
+                            x402 Agent Application | Trustless Agent | x402 API Integration
                         </p>
                     </div>
-                </div>
-                <div style="margin-top: 30px; font-size: 0.7em;">
-                    <p><strong>Contact:</strong> greennft.eth@gmail.com | @rochestor_mu</p>
-                    <p style="margin-top: 8px; opacity: 0.7;">Built with ❤️ using Solana, Next.js, and x402 Protocol</p>
                 </div>
             </section>
 

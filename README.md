@@ -1,502 +1,182 @@
-# DataNexus 🚀
+# DataNexus
 
-> **Autonomous Data Trading for AI Agents**
-> Powered by Irys × Solana × x402 × EigenAI
+> Autonomous Data Marketplace for AI Agents
+> Solana × x402 × Irys × EigenAI
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Solana x402 Hackathon](https://img.shields.io/badge/Solana%20x402-Hackathon%202025-blueviolet)](https://solana.com/x402/hackathon)
-[![Next.js](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)](https://www.typescriptlang.org/)
-[![Solana](https://img.shields.io/badge/Solana-Devnet-purple)](https://solana.com/)
-
----
-
-## 🏆 Solana x402 Hackathon Submission
-
-**Tracks**:
-- 🏆 **Best x402 Agent Application**
-- 🌟 **Best Trustless Agent**
-- ⚡ **Best x402 API Integration**
-
-**Submission Date**: November 11, 2025
 **Live Demo**: [https://xdatanexus.vercel.app/](https://xdatanexus.vercel.app/)
-**Demo Video**: [Coming Soon]
-
-### Why DataNexus?
-
-DataNexus is the **first production-ready data marketplace** enabling AI agents to autonomously purchase data using the **x402 protocol** on **Solana**. We solve the critical problem of autonomous agent commerce with:
-
-- ✅ **Full x402 Integration**: HTTP 402 status codes for payment-required resources
-- ✅ **Provider Reputation System**: On-chain trust scoring with 5 verification badges
-- ✅ **Solana Payments**: 400ms finality, $0.00025 transaction costs
-- ✅ **Smart Contract Escrow**: Trustless custom data requests
-- ✅ **Verifiable AI**: EigenAI cryptographic proofs prevent fraud
-- ✅ **Production Ready**: Deployed on Vercel, tested on Solana Devnet
 
 ---
 
-## 🎯 What is DataNexus?
+## Solana x402 Hackathon 2025
 
-**DataNexus** is the first **decentralized data marketplace** designed specifically for **AI Agents**. We enable autonomous agents to discover, purchase, and analyze data using real blockchain payments and verifiable AI inference.
+**Tracks**: x402 Agent Application | Trustless Agent | x402 API Integration
 
-### 🎬 Live Demo
+**What it does**: AI agents autonomously buy/sell data using HTTP 402 protocol on Solana.
 
-**Production URL**: [https://xdatanexus.vercel.app/](https://xdatanexus.vercel.app/)
-
-**Local Development**: [http://localhost:3000](http://localhost:3000) (after setup)
-
-**Demo Agent**: See our AI Analyst Agent autonomously search, purchase, and analyze crypto market data with real Solana USDC payments.
-
----
-
-##  Key Features
-
-### ✅ **Provider Reputation System** 🆕
-- **0-100 Trust Score**: Calculated from sales, ratings, disputes, and refunds
-- **5 Verification Badges**: Verified, Top Seller, Trusted, High Quality, Reliable
-- **On-Chain Verification**: Irys (permanent storage) + Solana Attestation Service (SAS)
-- **Anti-Fraud Protection**: 6-layer validation system
-- **Immutable Proof**: Cryptographic verification of all reputation data
-- **Autonomous Trust**: AI agents can verify provider credibility without human intervention
-
-### ✅ **Real x402 Payments**
-- Automatic 402 Payment Required detection
-- Real Solana USDC transfers (0.1 USDC per dataset)
-- On-chain payment verification
-- No manual payment flows - fully autonomous
-
-### ✅ **Decentralized Storage**
-- All data encrypted and stored on Irys (Arweave)
-- Permanent, censorship-resistant storage
-- Hybrid encryption (AES-256-GCM)
-- Verifiable data integrity
-
-### ✅ **AI-Powered Analysis**
-- EigenAI verifiable inference integration
-- Cryptographic proof of AI computations
-- Market sentiment analysis
-- Trading signal generation
-- Price trend prediction
-
-### ✅ **Agent-First Design**
-- RESTful API for autonomous agents
-- Python SDK with x402 support
-- Automatic search, purchase, and download
-- No human intervention required
-
-### ✅ **Trust & Safety Architecture** 🆕
-- **Hybrid On-chain/Off-chain Architecture**: Best of both worlds
-  - Detailed data → Irys (permanent, public, decentralized)
-  - Data hash → Solana (immutable proof)
-  - PostgreSQL → Cache for fast queries
-- **Provider Reputation System**: Score (0-100) based on sales, ratings, disputes, and refunds
-- **Automatic Refunds**: Failed downloads and duplicate payments automatically refunded
-- **Dispute Resolution**: Fair dispute handling with evidence submission
-- **Badge System**: Verified, Top Seller, Trusted, High Quality, Reliable badges
-- **Solana Attestation Service (SAS)**: On-chain reputation verification for high-reputation providers (score ≥ 80)
-- **Data Integrity Verification**: Anyone can verify data hasn't been tampered with
-
-### ✅ **Data Request Marketplace** 🆕
-- **Custom Data Requests**: Buyers post specific data needs with budget and deadline
-- **Provider Proposals**: Data providers submit competitive proposals
-- **PDA-based Escrow**: Solana Anchor smart contract for trustless payments
-- **Automatic Distribution**: 95% to provider, 5% to platform fee
-- **Complete Workflow**: Request → Proposal → Escrow → Delivery → Confirmation
-- **Dispute Protection**: Built-in refund mechanism for quality issues
-
-### ✅ **Provider Tools** 🆕
-- **Dashboard**: Easy dataset upload and management
-- **Revenue Analytics**: Track sales, earnings, and platform fees (5%)
-- **Reputation Monitoring**: Real-time score and badge tracking
-- **Proposal Management**: Respond to custom data requests
-- **On-chain Sync Status**: Monitor Irys and SAS attestation status
+**Key differentiators**:
+- HTTP 402 protocol implementation (auto-retry, USDC payments)
+- On-chain reputation system (Irys + Solana Attestation Service)
+- Smart contract escrow for custom data requests
+- EigenAI verifiable inference (1M token grant)
+- Python SDK (3 lines of code)
 
 ---
 
-## 🏆 Solana x402 Hackathon Tracks
+## Core Features
 
-DataNexus is competing in **3 tracks** with unique advantages for each:
+**x402 Protocol**
+- HTTP 402 Payment Required detection
+- Auto-retry with payment proof
+- Direct USDC transfers to providers
+- PayAI Facilitator verification
 
-### 1. 🏆 Best x402 Agent Application ($20,000)
+**Reputation System**
+- 0-100 trust score (sales, ratings, disputes, refunds)
+- 5 verification badges
+- On-chain proof: Irys (data) + Solana Attestation Service (hash)
+- Agents verify providers autonomously
 
-**Why We Win:**
-- ✅ **Complete Agent Marketplace**: AI agents autonomously buy/sell data
-- ✅ **Production x402 Implementation**: Full HTTP 402 protocol with auto-retry
-- ✅ **Python SDK**: 3 lines of code for agent integration
-- ✅ **Real Transactions**: Live on Solana Devnet with USDC payments
-- ✅ **Practical Use Case**: $100B+ AI data market opportunity
+**Smart Contract Escrow**
+- PDA-based Anchor program
+- Custom data request marketplace
+- Automatic fund distribution (95% provider, 5% platform)
+- Dispute resolution
 
-### 2. 🌟 Best Trustless Agent ($10,000)
+**EigenAI Integration**
+- Verifiable inference (1M token grant)
+- Cryptographic proof of AI analysis
+- Auto-decryption for encrypted datasets
 
-**Our Advantage:**
-- ✅ **Provider Reputation System**: 0-100 score with 5 badge types
-- ✅ **On-Chain Verification**: Irys (permanent storage) + SAS attestation
-- ✅ **Anti-Fraud Protection**: 6-layer validation system
-- ✅ **Immutable Proof**: Cryptographic reputation records
-- ✅ **Autonomous Trust**: AI agents verify providers without human intervention
-
-### 3. ⚡ Best x402 API Integration ($10,000)
-
-**Our Strength:**
-- ✅ **Complete REST API**: OpenAPI documentation
-- ✅ **Agent-to-Agent Payments**: Autonomous USDC transfers
-- ✅ **Micro-payments**: $0.00025 per transaction
-- ✅ **Developer Tools**: Python SDK + 6 working examples
-- ✅ **Production Ready**: Deployed and tested on Solana Devnet
+**Developer Tools**
+- Python SDK (3-line integration)
+- REST API with OpenAPI docs
+- Working examples
 
 ---
 
-## 🚀 Quick Start
+## How It Works
 
-### Prerequisites
+**x402 Flow**:
+```
+1. Agent requests dataset → HTTP 402 (payment required)
+2. Agent pays USDC to provider's wallet
+3. Agent retries with tx signature
+4. Server verifies payment → returns data
+```
 
-- **Node.js** 20+
-- **npm** or **yarn**
-- **Solana wallet** (Phantom recommended)
-- **Git**
+**Reputation Flow**:
+```
+1. Provider uploads data → Irys (permanent storage)
+2. System calculates score → 0-100 (sales, ratings, disputes)
+3. High score (≥80) → SAS attestation (on-chain proof)
+4. Agents verify provider → autonomous trust
+```
 
-### Installation
+---
+
+## Quick Start
 
 ```bash
-# 1. Clone the repository
 git clone https://github.com/gududefengzhong/datanexus.git
 cd datanexus
-
-# 2. Install dependencies
 npm install
-
-# 3. Set up environment variables
 cp .env.example .env.local
-
-# 4. Edit .env.local with your credentials
-# Required variables:
-# - DATABASE_URL (Prisma Accelerate - already configured)
-# - REDIS_URL (Upstash - already configured)
-# - IRYS_PRIVATE_KEY (your Solana private key for Irys uploads)
-# - MASTER_ENCRYPTION_KEY (generate with: node -e "console.log(require('crypto').randomBytes(32).toString('base64'))")
-# Note: Payment addresses are stored in User.walletAddress (each provider has their own)
-
-# 5. Generate Prisma Client
-npx prisma generate
-
-# 6. Push database schema
-npx prisma db push
-
-# 7. Start development server
+# Edit .env.local with your keys
+npx prisma generate && npx prisma db push
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to see the app.
-
-### Quick Test
-
+**Test x402 flow**:
 ```bash
-# Check USDC balance
-python scripts/check-usdc-balance.py
-
-# Create sample datasets
-npx tsx scripts/create-real-datasets.ts
-
-# Run complete x402 flow demo
 python examples/demo_x402_complete_flow.py
 ```
 
 ---
 
-## 💡 How It Works
+## Tech Stack
 
-### For Data Providers
+**Frontend**: Next.js 16, React 18, TypeScript, TailwindCSS
+**Backend**: Next.js API, PostgreSQL (Prisma), Redis
+**Blockchain**: Solana Devnet, Irys, SPL Token (USDC)
+**AI**: EigenAI (grant-based auth)
+**Smart Contract**: Anchor (PDA-based escrow)
 
-1. **Upload Data** → Encrypt and upload to Irys (permanent storage)
-2. **Set Price** → Define pricing (e.g., 0.1 USDC per dataset)
-3. **Earn Revenue** → Receive Solana USDC payments automatically
+---
 
-### For AI Agents
-
-1. **Search** → Find datasets via API (`/api/agent/datasets?query=crypto`)
-2. **Purchase** → Automatic x402 payment with Solana USDC
-3. **Download** → Get encrypted data and decrypt locally
-4. **Analyze** → Use EigenAI for verifiable AI inference
-
-### Complete Workflow
+## Architecture
 
 ```
-Agent searches for "DeFi trading data"
+AI Agent (Python SDK)
+    ↓ HTTP 402
+Next.js API + x402 Middleware
     ↓
-Finds dataset: $0.1 USDC
+Business Logic (Dataset | Payment | Reputation | AI)
     ↓
-Requests download → 402 Payment Required
+Data Layer (PostgreSQL | Redis | Solana)
     ↓
-Agent automatically sends 0.1 USDC on Solana
-    ↓
-Server verifies payment on-chain
-    ↓
-Agent downloads encrypted data from Irys
-    ↓
-Agent decrypts data locally
-    ↓
-Agent analyzes with EigenAI (verifiable inference)
-    ↓
-Agent gets cryptographic proof of analysis
+External (Irys | EigenAI | SAS | Helius RPC)
+```
+
+**Hybrid On-chain/Off-chain**:
+- PostgreSQL: Fast queries (<100ms)
+- Irys: Permanent storage (detailed data)
+- Solana: Immutable proof (data hash)
+- SAS: On-chain attestation (score ≥80)
+
+---
+
+## Project Structure
+
+```
+app/api/
+  ├── agent/          # Agent endpoints (datasets, purchases)
+  ├── datasets/       # Dataset management
+  ├── disputes/       # Dispute resolution
+  ├── ratings/        # Provider ratings
+  └── providers/      # Reputation system
+lib/
+  ├── x402-middleware.ts      # HTTP 402 handler
+  ├── reputation.ts           # Score calculation
+  ├── onchain-sync.ts         # Irys + SAS sync
+  └── eigenai-client.ts       # EigenAI integration
+examples/
+  ├── python-sdk/x402_example.py
+  └── demo_x402_complete_flow.py
+programs/escrow/              # Anchor smart contract
 ```
 
 ---
 
-## 🏗️ Architecture
+## Live Accounts
 
-### Tech Stack
-
-**Frontend**:
-- Next.js 16 (App Router + Turbopack)
-- React 18 + TypeScript
-- TailwindCSS + shadcn/ui
-- Solana Wallet Adapter
-
-**Backend**:
-- Next.js API Routes
-- PostgreSQL + Prisma ORM (Prisma Accelerate)
-- Redis (Upstash)
-
-**Blockchain**:
-- Solana (Devnet)
-- Irys SDK (Arweave storage)
-- x402 Protocol
-- SPL Token (USDC transfers)
-
-**AI**:
-- EigenAI (Verifiable inference)
-- Grant-based authentication
-
-### System Architecture
-
-```
-┌─────────────────────────────────────────────────────┐
-│              User Layer                              │
-│  Web App  │  AI Agent  │  Python SDK                │
-└─────────────────────────────────────────────────────┘
-                         │
-┌─────────────────────────────────────────────────────┐
-│              API Gateway                             │
-│  Next.js API Routes + x402 Middleware               │
-└─────────────────────────────────────────────────────┘
-                         │
-┌─────────────────────────────────────────────────────┐
-│              Business Logic                          │
-│  Dataset  │  Order  │  Payment  │  Reputation  │  AI│
-└─────────────────────────────────────────────────────┘
-                         │
-┌─────────────────────────────────────────────────────┐
-│              Data Layer                              │
-│  PostgreSQL  │  Redis  │  Solana Blockchain         │
-└─────────────────────────────────────────────────────┘
-                         │
-┌─────────────────────────────────────────────────────┐
-│              External Services                       │
-│  Irys  │  x402  │  EigenAI  │  SAS  │  Helius RPC  │
-└─────────────────────────────────────────────────────┘
-```
+**Smart Contract**: `gxDTeSCzk9kFbKTKVrWo4Ey1RZJ3K9698` (Solana Devnet)
+**Irys**: Permanent storage for datasets and reputation data
+**SAS**: On-chain attestation for providers with score ≥80
 
 ---
 
-## 🆚 Why Not Google's A2A x402?
+## Reputation System
 
-While Google's [A2A x402 extension](https://github.com/google-agentic-commerce/a2a-x402) provides a comprehensive framework for agent-to-agent payments, DataNexus takes a simpler, more focused approach:
-
-### Our Advantages
-
-**1. Simplicity** 🎯
-- Direct HTTP 402 implementation without A2A protocol overhead
-- Standard HTTP headers, no special SDK required
-- Works with any HTTP client (curl, fetch, requests, etc.)
-
-**2. Complete Web3 Ecosystem** 🌐
-- Not just payments - includes storage, encryption, and verifiable AI
-- Irys for permanent decentralized storage
-- AES-256-GCM hybrid encryption
-- EigenAI for verifiable inference
-
-**3. Data-First Design** 📊
-- Optimized specifically for data marketplace use cases
-- **One-time purchase, unlimited downloads** - Buy once, download forever
-- Built-in download tracking and analytics (count + timestamp)
-
-**4. Production Ready** ✅
-- Real Solana USDC payments tested and working
-- 0.30 USDC in real transactions completed
-- Complete end-to-end testing
-
-### Comparison
-
-| Feature | DataNexus | Google A2A x402 |
-|---------|-----------|-----------------|
-| Protocol | HTTP 402 + Custom | A2A + x402 Extension |
-| Complexity | Low | High |
-| Use Case | Data Marketplace | General Agent Services |
-| Storage | Irys (Decentralized) | Not Specified |
-| Encryption | AES-256-GCM | Not Specified |
-| AI Verification | EigenAI | Not Specified |
-| Status | Production Ready | Specification |
-
----
-
-## 🛡️ x402 Protocol Challenges & Our Solutions
-
-Based on [community feedback](https://x.com/BoxMrChen/status/1984123266416644266), we've addressed key x402 protocol challenges:
-
-### Challenge 1: Engineering Complexity ⚙️
-- ❌ **Standard x402**: Requires special SDK and fetch wrappers
-- ✅ **DataNexus**: Standard HTTP headers, works with any client
-
-### Challenge 2: Limited Value 🧩
-- ❌ **Standard x402**: Just payment protocol
-- ✅ **DataNexus**: Complete Web3 data marketplace (storage + encryption + AI)
-
-### Challenge 3: High-Frequency Performance ⏱️
-- ⚠️ **Both**: ~3-5s for first payment (Solana confirmation time)
-- ✅ **DataNexus**: **Buy once, download forever** - Unlimited fast re-downloads (~500ms)
-- 💡 **Our Focus**: High-value data transactions, not high-frequency API calls
-- 📊 **Download Tracking**: Every download is tracked (count + timestamp) but no additional payment required
-
-### Challenge 4: Incomplete Flow 🔁
-- ❌ **Standard x402**: No transaction records or retry mechanism
-- ✅ **DataNexus**:
-  - Persistent order records in database
-  - On-chain payment verification
-  - Unlimited re-downloads for purchased datasets
-  - Download tracking (count + timestamp)
-
-### Challenge 5: Lack of Governance ⚖️
-- ❌ **Standard x402**: No dispute resolution or refunds
-- ✅ **DataNexus**: 🆕 **FULLY IMPLEMENTED WITH HYBRID ON-CHAIN/OFF-CHAIN ARCHITECTURE**
-  - ✅ **Hybrid Architecture**: Detailed data on Irys, proofs on Solana, cache in PostgreSQL
-  - ✅ **Provider Reputation System**: Score (0-100) based on sales, ratings, disputes, refunds
-  - ✅ **Automatic Refunds**: Failed downloads and duplicate payments auto-refunded
-  - ✅ **Dispute Resolution**: Submit disputes with evidence, fair review process
-  - ✅ **Badge System**: Verified, Top Seller, Trusted, High Quality, Reliable
-  - ✅ **Rating System**: 5-star ratings with detailed dimensions (quality, accuracy, docs, support)
-  - ✅ **Solana Attestation Service (SAS)**: On-chain reputation verification for score ≥ 80
-  - ✅ **Data Integrity Verification**: Anyone can verify data hasn't been tampered with
-
-**See detailed analysis:**
-- [X402_ISSUES_ANALYSIS.md](./X402_ISSUES_ANALYSIS.md) - Problem analysis
-- [REFUND_SCENARIOS.md](./REFUND_SCENARIOS.md) - Refund scenarios and solutions
-- [IMPLEMENTATION_SUMMARY.md](./IMPLEMENTATION_SUMMARY.md) - Complete implementation details
-
----
-
-## 📁 Project Structure
-
+**Score Calculation** (0-100):
 ```
-datanexus/
-├── app/                          # Next.js App Router
-│   ├── api/                      # API Routes
-│   │   ├── agent/                # Agent API endpoints
-│   │   │   ├── datasets/         # Dataset search, download, analyze
-│   │   │   └── purchases/        # Purchase history
-│   │   ├── datasets/             # Dataset management
-│   │   ├── disputes/             # 🆕 Dispute management
-│   │   ├── refunds/              # 🆕 Refund tracking
-│   │   ├── ratings/              # 🆕 Provider ratings
-│   │   ├── providers/            # 🆕 Provider reputation
-│   │   └── auth/                 # Authentication
-│   ├── dashboard/                # User dashboard
-│   ├── marketplace/              # Data marketplace UI
-│   └── components/               # React components
-├── lib/                          # Shared libraries
-│   ├── encryption.ts             # AES-256-GCM encryption
-│   ├── irys.ts                   # Irys SDK integration
-│   ├── x402-middleware.ts        # x402 payment verification
-│   ├── eigenai-client.ts         # EigenAI integration
-│   ├── reputation.ts             # 🆕 Reputation system (0-100 score + 5 badges)
-│   ├── onchain-sync.ts           # 🆕 Hybrid on-chain/off-chain sync with retry
-│   ├── onchain-reputation.ts     # 🆕 Irys upload + SAS attestation
-│   └── refund.ts                 # 🆕 Refund & dispute resolution
-├── prisma/                       # Database
-│   ├── schema.prisma             # Database schema (with Reputation models)
-│   └── seed.ts                   # Seed data
-├── examples/                     # Examples & SDKs
-│   ├── python-sdk/               # Python SDK
-│   │   ├── x402_example.py       # x402 client with auto-retry
-│   │   ├── datanexus_client.py   # DataNexus client
-│   │   └── demo_test.py          # Complete demo test script
-│   └── demo_x402_complete_flow.py # Complete x402 flow demonstration
-├── scripts/                      # Utility scripts
-│   ├── create-real-datasets.ts   # Create encrypted datasets
-│   ├── init-reputation.ts        # 🆕 Initialize reputation for existing users
-│   └── check-usdc-balance.py     # Check USDC balance
-├── programs/                     # 🆕 Solana Programs
-│   └── escrow/                   # Anchor escrow smart contract
-└── docs/                         # Documentation
+Base: 50
++ Rating bonus: (avg_rating - 3) × 10  (max +20)
++ Sales bonus: min(sales / 10, 20)     (max +20)
+- Dispute penalty: disputes × 30
+- Refund penalty: refunds × 20
 ```
 
----
+**Badges** (5 types):
+- Verified (email + wallet)
+- Top Seller (100+ sales)
+- Trusted (score ≥90, 50+ sales)
+- High Quality (avg rating ≥4.5)
+- Reliable (refund rate <5%)
 
-## 🛡️ Trust & Safety System 🆕
-
-DataNexus implements a comprehensive trust and safety system with **hybrid on-chain/off-chain architecture** to address the governance challenges of x402 protocol.
-
-### Hybrid Architecture
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                   User Action                            │
-│  (Rating, Dispute, Refund)                              │
-└─────────────────────────────────────────────────────────┘
-                         │
-         ┌───────────────┼───────────────┐
-         │               │               │
-         ▼               ▼               ▼
-┌────────────────┐ ┌──────────┐ ┌──────────────┐
-│  PostgreSQL    │ │   Irys   │ │   Solana     │
-│  (Cache)       │ │ (Storage)│ │  (Proof)     │
-├────────────────┤ ├──────────┤ ├──────────────┤
-│ Fast queries   │ │ Detailed │ │ Data hash    │
-│ User experience│ │ data     │ │ Immutable    │
-│ Temporary      │ │ Permanent│ │ Verifiable   │
-└────────────────┘ └──────────┘ └──────────────┘
-                         │
-                         ▼
-              ┌──────────────────┐
-              │  SAS Attestation │
-              │  (Score ≥ 80)    │
-              └──────────────────┘
-```
-
-**Why Hybrid?**
-- ✅ **Trustless**: Critical data on Irys (permanent) and Solana (immutable proof)
-- ✅ **Fast**: PostgreSQL cache for instant queries (<100ms)
-- ✅ **Verifiable**: Anyone can verify data integrity on-chain
-- ✅ **Transparent**: All ratings, disputes, refunds are public on Irys
-- ✅ **Tamper-proof**: Solana hash ensures data hasn't been modified
-- ✅ **Autonomous**: AI agents can verify providers without human intervention
-
-**Sync Mechanism with Retry**:
-```
-User Action → PostgreSQL (instant response)
-              ↓
-         Background Sync (with retry)
-              ├─ Attempt 1: Upload to Irys
-              ├─ Attempt 2: Retry after 1s (if failed)
-              ├─ Attempt 3: Retry after 2s (if failed)
-              └─ Attempt 4: Retry after 4s (if failed)
-              ↓
-         Store hash on Solana
-              ↓
-         Verify data integrity
-              ↓
-         Update database with on-chain references
-              ↓
-         Cron job (every 5 min) syncs any missed items
-```
-
-**Reliability Features**:
-- ✅ **Automatic Retry**: 3 retries with exponential backoff
-- ✅ **Data Verification**: SHA-256 hash verification after upload
-- ✅ **Background Sync**: Non-blocking, doesn't slow down user experience
-- ✅ **Cron Job**: Periodic sync of any failed items
-- ✅ **Status API**: Check sync status anytime
-
-### Provider Reputation System
+**On-chain Proof**:
+- Score ≥80 → SAS attestation (Solana)
+- All data → Irys (permanent storage)
+- Hash → Solana (immutable proof)
 
 Every data provider has a **reputation score (0-100)** calculated from:
 

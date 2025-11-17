@@ -280,7 +280,7 @@ This SDK demonstrates the complete x402 protocol integration on Solana, enabling
 **Key Features**:
 - ✅ HTTP 402 Payment Required protocol
 - ✅ Direct Solana USDC payments (no intermediary)
-- ✅ EigenAI verifiable inference (1M tokens)
+- ✅ EigenAI verifiable inference
 - ✅ Provider reputation system
 - ✅ Hybrid encryption (AES-256 + RSA)
 
